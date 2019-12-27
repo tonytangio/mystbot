@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import secret from '../config/secret';
+import config, { secret } from '../config';
 
 const client = new Discord.Client();
 
