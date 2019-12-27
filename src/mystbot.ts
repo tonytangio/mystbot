@@ -28,7 +28,7 @@ const messageHandler = (message: Message): void => {
     command.execute(message, args);
   } catch (error) {
     console.error(error);
-    message.reply('There was an error trying to execute that command.');
+    message.reply('there was an error trying to execute that command.');
   }
 };
 
