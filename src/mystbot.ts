@@ -3,9 +3,9 @@ import Discord, { Message, Client, Collection } from 'discord.js';
 
 import config, { secret } from '../config';
 import { Command } from './interfaces/commands';
-import { ExtendedMessage } from './types/extendedDiscordjs';
+import { ExtendedMessage, ClientWithCommands } from './types/extendedDiscordjs';
 
-const client = new Discord.Client() as Client & { commands: Collection<string, Command> };
+const client = new Discord.Client() as ClientWithCommands;
 client.commands = new Discord.Collection<string, Command>();
 
 const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.ts'));
