@@ -1,4 +1,3 @@
-import { Message } from 'discord.js';
 import { ExtendedMessage } from '../types/extendedDiscordjs';
 
 export interface Command {

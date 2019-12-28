@@ -1,8 +1,8 @@
 import fs from 'fs';
-import Discord, { Message, Client, Collection } from 'discord.js';
+import Discord from 'discord.js';
 
 import config, { secret } from '../config';
-import { Command } from './interfaces/commands';
+import { Command } from './interfaces/Command';
 import { ExtendedMessage, ClientWithCommands } from './types/extendedDiscordjs';
 
 const client = new Discord.Client() as ClientWithCommands;

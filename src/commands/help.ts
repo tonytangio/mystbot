@@ -1,7 +1,5 @@
-import Discord from 'discord.js';
-
 import config from '../../config';
-import { Command } from '../interfaces/commands';
+import { Command } from '../interfaces/Command';
 import { buildEmbed } from '../utils/buildEmbed';
 
 const help: Command = {
