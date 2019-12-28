@@ -3,6 +3,14 @@ import { ExtendedMessage, Cooldowns } from '../types/extendedDiscordjs';
 import { Command } from '../interfaces/Command';
 import config from '../config';
 
+const checkGuildOnlyOk = (guildOnly: boolean | undefined, channelType: string, message: ExtendedMessage): boolean => {
+  if (guildOnly && channelType !== 'text') {
+    message.reply("I can't execute that command inside DMs.");
+    return false;
+  }
+  return true;
+};
+
 const checkAndManageCooldown = (
   cooldowns: Cooldowns,
   command: Command,
@@ -37,6 +45,7 @@ export const commandHandler = (command: Command, args: string[], message: Extend
   const { client } = message;
   const { cooldowns } = client;
 
+  if (!checkGuildOnlyOk(command.guildOnly, message.channel.type, message)) return;
   if (!checkAndManageCooldown(cooldowns, command, message.author.id, message)) return;
 
   try {
