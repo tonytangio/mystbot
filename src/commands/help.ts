@@ -1,4 +1,4 @@
-import config from '../../config';
+import config from '../config';
 import { Command } from '../interfaces/Command';
 import { buildEmbed } from '../utils/buildEmbed';
 
@@ -39,7 +39,7 @@ const help: Command = {
       }
 
       const embed = buildEmbed({
-        title: `help: ${command.name}`,
+        title: `help (command: ${command.name})`,
         description: `Information about command: \`${command.name}\``
       });
 

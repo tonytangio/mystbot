@@ -1,4 +1,4 @@
-import { Command } from '../interfaces/commands';
+import { Command } from '../interfaces/Command';
 import { buildEmbed } from '../utils/buildEmbed';
 
 const debug: Command = {
@@ -10,7 +10,7 @@ const debug: Command = {
     embed
       .addField('Message', message.content)
       .addField('Command', debug.name, true)
-      .addField('Args', args.toString(), true)
+      .addField('Args', args.toString() || 'No args supplied.', true)
       .addField('Created At', message.createdAt);
 
     message.channel.send(embed);

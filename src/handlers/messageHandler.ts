@@ -1,20 +1,23 @@
 import config from '../config';
 import { ExtendedMessage } from '../types/extendedDiscordjs';
 import { Command } from '../interfaces/Command';
+import { commandHandler } from './commandHandler';
 
 export const messageHandler = (message: ExtendedMessage): void => {
-  if (!message.content.startsWith(config.prefix) || message.author.bot) return;
+  if (
+    message.author.bot ||
+    !message.content.startsWith(config.prefix) ||
+    message.content.length === config.prefix.length
+  )
+    return;
 
   const args: string[] = message.content.slice(config.prefix.length).split(/ +/);
-  const commandName: string | undefined = args.shift()?.toLowerCase();
-  if (!commandName || !message.client.commands.has(commandName)) return;
+  const commandName: string = args.shift()?.toLowerCase()!;
 
-  const command: Command = message.client.commands.get(commandName)!;
+  const command: Command =
+    message.client.commands.get(commandName!) ||
+    message.client.commands.find(c => (c.aliases ? c.aliases.includes(commandName!) : false));
 
-  try {
-    command.execute(message, args);
-  } catch (error) {
-    console.error(error);
-    message.reply('there was an error trying to execute that command.');
-  }
+  if (!command) return;
+  commandHandler(command, args, message);
 };
