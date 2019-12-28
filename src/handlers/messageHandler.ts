@@ -5,8 +5,8 @@ import { commandHandler } from './commandHandler';
 
 export const messageHandler = (message: ExtendedMessage): void => {
   if (
-    message.author.bot ||
     !message.content.startsWith(config.prefix) ||
+    message.author.bot ||
     message.content.length === config.prefix.length
   )
     return;
