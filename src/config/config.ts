@@ -1,4 +1,5 @@
 const config = {
+  cooldownDefault: 3,
   prefix: '?'
 };
 

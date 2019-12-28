@@ -3,11 +3,12 @@ import Discord from 'discord.js';
 
 import { secret } from './config';
 import { Command } from './interfaces/Command';
-import { ClientWithCommands } from './types/extendedDiscordjs';
+import { ExtendedClient } from './types/extendedDiscordjs';
 import { messageHandler } from './handlers/messageHandler';
 
-const client = new Discord.Client() as ClientWithCommands;
+const client = new Discord.Client() as ExtendedClient;
 client.commands = new Discord.Collection<string, Command>();
+client.cooldowns = new Discord.Collection<string, Discord.Collection<string, number>>();
 
 const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.ts'));
 commandFiles.forEach(async file => {
