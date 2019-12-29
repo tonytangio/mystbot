@@ -6,7 +6,7 @@ const help: Command = {
   name: 'help',
   aliases: ['commands', 'what'],
   description: 'List all mystbot commands, or info on a specified command.',
-  execute: async (message, args) => {
+  execute: (message, args) => {
     const { commands } = message.client;
     if (!args.length) {
       // No args: list all commands.
@@ -18,24 +18,25 @@ const help: Command = {
           `\nYou can send \`${config.prefix}help [commandName]\` to get info on that specific command.`
         );
 
-      await message.channel.send(embed);
+      message.channel.send(embed);
     } else {
       // Given arg: list specified command info.
       // Users can specify normal command names, or aliases.
       // Special logic in the case where given an alias.
-      let command, givenAlias: string | undefined;
+      let command;
+      let givenAlias: string | undefined;
       const commandOrAliasName = args[0].toLowerCase();
-      const nameCommand = commands.get(commandOrAliasName);
-      const aliasCommand = commands.find(c => (c.aliases ? c.aliases.includes(commandOrAliasName) : false));
-      if (nameCommand) {
-        command = nameCommand;
-      } else if (aliasCommand) {
-        givenAlias = commandOrAliasName;
-        command = aliasCommand;
-      }
 
+      command = commands.get(commandOrAliasName);
       if (!command) {
-        return message.reply("that's not a valid command.");
+        // Cannot find named command -> check all aliases.
+        command = commands.find(c => (c.aliases ? c.aliases.includes(commandOrAliasName) : false));
+        if (!command) {
+          // No matching aliases either. Invalid command.
+          message.reply("that's not a valid command.");
+          return;
+        }
+        givenAlias = commandOrAliasName;
       }
 
       const embed = buildEmbed({
