@@ -7,7 +7,7 @@ export const messageHandler = (message: ExtendedMessage): void => {
   if (
     !message.content.startsWith(config.prefix) ||
     message.author.bot ||
-    message.content.trim.length === config.prefix.length
+    message.content.length === config.prefix.length
   )
     return;
 
