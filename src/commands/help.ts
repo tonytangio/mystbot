@@ -6,6 +6,7 @@ const help: Command = {
   name: 'help',
   aliases: ['commands', 'what'],
   description: 'List all mystbot commands, or info on a specified command.',
+  usage: '`help [commandName]`',
   execute: (message, args) => {
     const { commands } = message.client;
     if (!args.length) {
@@ -51,6 +52,10 @@ const help: Command = {
         embed.addField('Aliases', aliases.join(', '));
       }
       embed.addField('Description', command.description);
+      if (command.usage) embed.addField('Usage', command.usage, true);
+      if (command.minArgs) embed.addField('Minimum Arguments', command.minArgs, true);
+      embed.addField('Cooldown', command.cooldown || config.cooldownDefault);
+      if (command.guildOnly) embed.addField('Server Only', 'true');
 
       message.channel.send(embed);
     }
