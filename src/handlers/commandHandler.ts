@@ -3,6 +3,19 @@ import { ExtendedMessage, Cooldowns } from '../types/extendedDiscordjs';
 import { Command } from '../interfaces/Command';
 import config from '../config';
 
+const checkArgs = (command: Command, args: string[], message: ExtendedMessage): boolean => {
+  if (command.minArgs && args.length < command.minArgs) {
+    let reply = `\`?${command.name}\` requires ${command.minArgs} or more arguments`;
+    reply += ` - you provided ${args.length} argument${args.length === 1 ? '' : 's'}.`;
+    if (command.usage) {
+      reply += `\nUsage: \`${command.usage}\``;
+    }
+    message.reply(reply);
+    return false;
+  }
+  return true;
+};
+
 const checkGuildOnlyOk = (guildOnly: boolean | undefined, channelType: string, message: ExtendedMessage): boolean => {
   if (guildOnly && channelType !== 'text') {
     message.reply("I can't execute that command inside DMs.");
@@ -45,6 +58,7 @@ export const commandHandler = (command: Command, args: string[], message: Extend
   const { client } = message;
   const { cooldowns } = client;
 
+  if (!checkArgs(command, args, message)) return;
   if (!checkGuildOnlyOk(command.guildOnly, message.channel.type, message)) return;
   if (!checkAndManageCooldown(cooldowns, command, message.author.id, message)) return;
 
