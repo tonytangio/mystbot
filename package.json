@@ -4,7 +4,7 @@
   "description": "",
   "main": "./src/mystbot.ts",
   "scripts": {
-    "start": "ts-node src/mystbot.ts"
+    "start": "ts-node-dev src/mystbot.ts"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "discord.js": "^11.5.1"
   },
   "devDependencies": {
-    "ts-node": "^8.5.4",
+    "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.7.4"
   }
 }
