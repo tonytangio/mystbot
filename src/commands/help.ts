@@ -6,7 +6,7 @@ const help: Command = {
   name: 'help',
   aliases: ['commands', 'what'],
   description: 'List all mystbot commands, or info on a specified command.',
-  usage: '`help [commandName]`',
+  usage: '`?help [commandName]`',
   execute: (message, args) => {
     const { commands } = message.client;
     if (!args.length) {
