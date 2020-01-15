@@ -38,7 +38,7 @@ const peepoLove: Command = {
 
     ctx.drawImage(peepoHands, 0, 0);
 
-    message.channel.send('', new Discord.Attachment(canvas.toBuffer()));
+    message.channel.send(new Discord.Attachment(canvas.toBuffer()));
   }
 };
 
