@@ -19,4 +19,4 @@ const debug: Command = {
   }
 };
 
-export default debug;
+export const command = debug;

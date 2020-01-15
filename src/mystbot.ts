@@ -34,9 +34,11 @@ export class MystBot extends Discord.Client {
   loadCommands = () => {
     const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.ts'));
     commandFiles.forEach(async file => {
-      const command: Command = (await import(`./commands/${file}`)).default;
-      this.commands.set(command.name, command);
-      console.log(`Imported Command: ${JSON.stringify(command)}`);
+      const command: Command = (await import(`./commands/${file}`)).command;
+      if (command) {
+        this.commands.set(command.name, command);
+        console.log(`Imported Command: ${JSON.stringify(command)}`);
+      }
     });
   };
 }

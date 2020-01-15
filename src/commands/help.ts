@@ -62,4 +62,4 @@ const help: Command = {
   }
 };
 
-export default help;
+export const command = help;
