@@ -18,6 +18,7 @@
   "homepage": "https://github.com/Mysterise/mystbot#readme",
   "dependencies": {
     "@types/node": "^13.1.1",
+    "canvas": "^2.6.1",
     "discord.js": "^11.5.1"
   },
   "devDependencies": {

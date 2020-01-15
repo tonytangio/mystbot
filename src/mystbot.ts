@@ -36,7 +36,7 @@ export class MystBot extends Discord.Client {
     commandFiles.forEach(async file => {
       const command: Command = (await import(`./commands/${file}`)).command;
       if (command) {
-        this.commands.set(command.name, command);
+        this.commands.set(command.name.toLowerCase(), command);
         console.log(`Imported Command: ${JSON.stringify(command)}`);
       }
     });
