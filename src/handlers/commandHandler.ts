@@ -1,9 +1,10 @@
-import Discord from 'discord.js';
-import { ExtendedMessage, Cooldowns } from '../types/extendedDiscordjs';
-import { Command } from '../interfaces/Command';
 import config from '../config';
+import Discord, { Message } from 'discord.js';
+import { Command } from '../interfaces/Command';
+import { Cooldowns } from '../mystbot';
+import { ExtendedMessage } from '../types/extendedDiscordjs';
 
-const checkArgs = (command: Command, args: string[], message: ExtendedMessage): boolean => {
+const checkArgs = (command: Command, args: string[], message: Message): boolean => {
   if (command.minArgs && args.length < command.minArgs) {
     let reply = `\`?${command.name}\` requires ${command.minArgs} or more arguments`;
     reply += ` - you provided ${args.length} argument${args.length === 1 ? '' : 's'}.`;
@@ -16,7 +17,7 @@ const checkArgs = (command: Command, args: string[], message: ExtendedMessage): 
   return true;
 };
 
-const checkGuildOnlyOk = (guildOnly: boolean | undefined, channelType: string, message: ExtendedMessage): boolean => {
+const checkGuildOnlyOk = (guildOnly: boolean | undefined, channelType: string, message: Message): boolean => {
   if (guildOnly && channelType !== 'text') {
     message.reply("I can't execute that command inside DMs.");
     return false;
@@ -28,18 +29,18 @@ const checkAndManageCooldown = (
   cooldowns: Cooldowns,
   command: Command,
   authorId: string,
-  message: ExtendedMessage
+  message: Message
 ): boolean => {
   if (!cooldowns.has(command.name)) {
     cooldowns.set(command.name, new Discord.Collection<string, number>());
   }
 
   const now = Date.now();
-  const timestamps = cooldowns.get(command.name)!;
+  const authorIdToCooldownStartTime = cooldowns.get(command.name)!;
   const cooldownDuration = (command.cooldown || config.cooldownDefault) * 1000;
 
-  if (timestamps.has(authorId)) {
-    const expirationTime = timestamps.get(authorId)! + cooldownDuration;
+  if (authorIdToCooldownStartTime.has(authorId)) {
+    const expirationTime = authorIdToCooldownStartTime.get(authorId)! + cooldownDuration;
 
     if (now < expirationTime) {
       const timeLeft = (expirationTime - now) / 1000;
@@ -49,18 +50,17 @@ const checkAndManageCooldown = (
       return false;
     }
   }
-  timestamps.set(authorId, now);
-  setTimeout(() => timestamps.delete(authorId), cooldownDuration);
+  authorIdToCooldownStartTime.set(authorId, now);
+  setTimeout(() => authorIdToCooldownStartTime.delete(authorId), cooldownDuration);
   return true;
 };
 
 export const commandHandler = (command: Command, args: string[], message: ExtendedMessage): void => {
   const { client } = message;
-  const { cooldowns } = client;
 
   if (!checkArgs(command, args, message)) return;
   if (!checkGuildOnlyOk(command.guildOnly, message.channel.type, message)) return;
-  if (!checkAndManageCooldown(cooldowns, command, message.author.id, message)) return;
+  if (!checkAndManageCooldown(client.cooldowns, command, message.author.id, message)) return;
 
   try {
     command.execute(message, args);

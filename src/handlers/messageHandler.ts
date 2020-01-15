@@ -1,7 +1,7 @@
 import config from '../config';
-import { ExtendedMessage } from '../types/extendedDiscordjs';
 import { Command } from '../interfaces/Command';
 import { commandHandler } from './commandHandler';
+import { ExtendedMessage } from '../types/extendedDiscordjs';
 
 export const messageHandler = (message: ExtendedMessage): void => {
   if (
