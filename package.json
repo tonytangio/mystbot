@@ -4,7 +4,9 @@
   "description": "",
   "main": "./src/mystbot.ts",
   "scripts": {
-    "start": "ts-node-dev src/mystbot.ts"
+    "build": "sudo docker build -t mysterise/mystbot .",
+    "start": "sudo docker run -p 8000:8080 -d mysterise/mystbot",
+    "run": "ts-node-dev src/mystbot.ts"
   },
   "repository": {
     "type": "git",
