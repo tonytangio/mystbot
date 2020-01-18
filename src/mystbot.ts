@@ -9,7 +9,7 @@ interface MystBotOptions extends ClientOptions {
 }
 
 export type Commands = Discord.Collection<string, Command>;
-/** cooldown.name -> (authorId -> cooldownStartTime) */
+/** command.name -> (authorId -> cooldownStartTime) */
 export type Cooldowns = Discord.Collection<string, Discord.Collection<string, number>>;
 
 export class MystBot extends Discord.Client {
@@ -18,12 +18,11 @@ export class MystBot extends Discord.Client {
 
   constructor(options: MystBotOptions) {
     super(options);
-    this.commands = new Discord.Collection<string, Command>();
+    this.commands = this.loadCommands();
     this.cooldowns = new Discord.Collection<string, Discord.Collection<string, number>>();
 
     this.login(options.token);
     this.setHandlers();
-    this.loadCommands();
   }
 
   setHandlers = () => {
@@ -31,15 +30,17 @@ export class MystBot extends Discord.Client {
     this.on('message', messageHandler);
   };
 
-  loadCommands = () => {
+  loadCommands = (): Commands => {
+    const commands = new Discord.Collection<string, Command>();
     const commandFiles = fs.readdirSync('./src/commands').filter(file => file.endsWith('.ts'));
     commandFiles.forEach(async file => {
       const command: Command = (await import(`./commands/${file}`)).command;
       if (command) {
-        this.commands.set(command.name.toLowerCase(), command);
+        commands.set(command.name.toLowerCase(), command);
         console.log(`Imported Command: ${JSON.stringify(command)}`);
       }
     });
+    return commands;
   };
 }
 
