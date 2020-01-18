@@ -4,10 +4,10 @@ import { Canvas, Image, loadImage } from 'canvas';
 import { Command } from '../interfaces/Command';
 
 const canvasLength = 512;
-const userImageDiameter = 330;
-const userImageRadius = userImageDiameter / 2;
-const userImageXPos = -210;
-const userImageYPos = canvasLength - 241;
+const imageToLoveDiameter = 330;
+const imageToLoveRadius = imageToLoveDiameter / 2;
+const imageToLoveXPos = -210;
+const imageToLoveYPos = canvasLength - 241;
 
 const peepoBody = new Image();
 const peepoHands = new Image();
@@ -20,10 +20,9 @@ const peepoLove: Command = {
   description: 'Give peepoLove to someone.',
   usage: '`?peepoLove (user)`',
   execute: async (message, args) => {
+    let imageToLove;
     const attachedImage = message.attachments.first()?.url;
     const targetUser = message.mentions.members.first()?.user;
-    let imageToLove;
-
     if (attachedImage) {
       imageToLove = await loadImage(attachedImage);
     } else if (targetUser) {
@@ -42,9 +41,9 @@ const peepoLove: Command = {
     ctx.save();
     ctx.rotate(-0.4);
     ctx.beginPath();
-    ctx.arc(userImageXPos + userImageRadius, userImageYPos + userImageRadius, userImageRadius, 0, 2 * Math.PI);
+    ctx.arc(imageToLoveXPos + imageToLoveRadius, imageToLoveYPos + imageToLoveRadius, imageToLoveRadius, 0, 2 * Math.PI);
     ctx.clip();
-    ctx.drawImage(imageToLove, userImageXPos, userImageYPos, userImageDiameter, userImageDiameter);
+    ctx.drawImage(imageToLove, imageToLoveXPos, imageToLoveYPos, imageToLoveDiameter, imageToLoveDiameter);
     ctx.restore();
 
     ctx.drawImage(peepoHands, 0, 0);
