@@ -4,8 +4,8 @@ services:
     image: node:latest
     volumes:
       - .:/mystbot
+      # .dockerignore is not applied to volumes - the following are "ignored":
       - /mystbot/node_modules
+      - /mystbot/.git
     working_dir: /mystbot
     command: bash -c "npm install && npm run watch"
-    ports:
-      - 8000:8080
