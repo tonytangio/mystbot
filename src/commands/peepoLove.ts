@@ -20,20 +20,31 @@ const peepoLove: Command = {
   description: 'Give peepoLove to someone.',
   usage: '`?peepoLove (user)`',
   execute: async (message, args) => {
-    const targetUser = message.mentions.members.first().user;
-    const userImage = await loadImage(targetUser.avatarURL);
+    const attachedImage = message.attachments.first()?.url;
+    const targetUser = message.mentions.members.first()?.user;
+    let imageToLove;
+
+    if (attachedImage) {
+      imageToLove = await loadImage(attachedImage);
+    } else if (targetUser) {
+      imageToLove = await loadImage(targetUser.avatarURL);
+    } else {
+      // TODO: Send original peepoLove image if no specified imageToLove
+      message.reply(`\`peepoLove\` requires an attached image or a mentioned user to be loved.`);
+      return;
+    }
 
     const canvas = new Canvas(canvasLength, canvasLength);
     const ctx = canvas.getContext('2d');
 
     ctx.drawImage(peepoBody, 0, 0, canvasLength, canvasLength);
-    // User image block
+
     ctx.save();
     ctx.rotate(-0.4);
     ctx.beginPath();
     ctx.arc(userImageXPos + userImageRadius, userImageYPos + userImageRadius, userImageRadius, 0, 2 * Math.PI);
     ctx.clip();
-    ctx.drawImage(userImage, userImageXPos, userImageYPos, userImageDiameter, userImageDiameter);
+    ctx.drawImage(imageToLove, userImageXPos, userImageYPos, userImageDiameter, userImageDiameter);
     ctx.restore();
 
     ctx.drawImage(peepoHands, 0, 0);
