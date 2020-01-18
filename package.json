@@ -4,9 +4,9 @@
   "description": "",
   "main": "./src/mystbot.ts",
   "scripts": {
-    "build": "sudo docker build -t mysterise/mystbot .",
-    "start": "sudo docker run -p 8000:8080 mysterise/mystbot",
-    "start:d": "sudo docker run -p 8000:8080 -d mysterise/mystbot",
+    "build": "sudo docker-compose -f docker-compose.builder.yml run --rm install",
+    "start": "sudo docker-compose up",
+    "start:d": "sudo docker-compose up -d",
     "watch": "ts-node-dev src/mystbot.ts"
   },
   "repository": {

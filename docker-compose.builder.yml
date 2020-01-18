@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-  dev:
+  install:
     image: node:latest
     working_dir: /mystbot
     volumes:
@@ -8,4 +8,4 @@ services:
       # .dockerignore is not applied to volumes - the following are "ignored":
       - /mystbot/node_modules
       - /mystbot/.git
-    command: npm run watch
+    command: npm install
