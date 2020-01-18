@@ -4,8 +4,11 @@ services:
     image: node:latest
     working_dir: /mystbot
     volumes:
+      - nodemodules:/mystbot/node_modules
       - .:/mystbot
       # .dockerignore is not applied to volumes - the following are "ignored":
-      - /mystbot/node_modules
       - /mystbot/.git
     command: npm run watch
+volumes:
+  nodemodules:
+    external: true
