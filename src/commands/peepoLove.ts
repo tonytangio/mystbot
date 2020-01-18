@@ -1,4 +1,4 @@
-import Discord, { DiscordAPIError } from 'discord.js';
+import Discord from 'discord.js';
 import fs from 'fs';
 import { Canvas, Image, loadImage } from 'canvas';
 import { Command } from '../interfaces/Command';
@@ -18,7 +18,7 @@ const peepoLove: Command = {
   name: 'peepoLove',
   aliases: ['pepeLove', 'love', 'heart'],
   description: 'Give peepoLove to someone.',
-  usage: '`?peepoLove (user)`',
+  usage: '`?peepoLove (image|user)`',
   execute: async (message, args) => {
     let imageToLove;
     const attachedImage = message.attachments.first()?.url;
