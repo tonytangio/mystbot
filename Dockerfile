@@ -1,6 +1,6 @@
 FROM node:latest
-WORKDIR /server
 
+WORKDIR /mystbot
 COPY package.json .
 RUN npm install
 COPY . .
