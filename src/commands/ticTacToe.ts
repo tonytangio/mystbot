@@ -2,32 +2,63 @@ import Discord, { RichEmbed } from 'discord.js';
 import { Command } from './Command';
 import { buildEmbed } from '../utils/buildEmbed';
 
+const indexToEmoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣'];
+
 class TicTacToeGame {
   board: number[][] = [
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0]
+    [1, 0, 2],
+    [0, 2, 1],
+    [0, 0, 1]
   ];
   constructor(private player1: Discord.User, private player2: Discord.User) { }
 
-  renderCell(value: number): string {
-    return `
-⬜⬜⬜
-⬜⬜⬜
-⬜⬜⬜`.trim();
+  renderSquareTopOrBot = (rowIndex: number, colIndex: number): string => {
+    switch (this.board[rowIndex][colIndex]) {
+      case 0: return '⬜⬜⬜'
+      case 1: return '⬜⬜⬜'
+      case 2: return '⬜⬜⬜'
+      default: throw new Error(`ticTacToe invalid board state: ${this.board}`);
+    }
   }
 
-  renderBoard = (): string => {
+  renderSquareMid = (rowIndex: number, colIndex: number): string => {
+    switch (this.board[rowIndex][colIndex]) {
+      case 0: return `⬜${indexToEmoji[rowIndex * 3 + colIndex]}⬜`
+      case 1: return '⬜❌⬜'
+      case 2: return '⬜⭕⬜'
+      default: throw new Error(`ticTacToe invalid board state: ${this.board}`);
+    }
+  }
+
+  renderRowTopOrBot = (row: number[], rowIndex: number): string => {
+    return row.reduce((prevCols, _, colIndex) =>
+      prevCols +
+      (colIndex > 0 ? '⬛' : '') +
+      this.renderSquareTopOrBot(rowIndex, colIndex)
+      , '');
+  }
+
+  renderRowMid = (row: number[], rowIndex: number): string => {
+    return row.reduce((prevCols, _, colIndex) =>
+      prevCols +
+      (colIndex > 0 ? '⬛' : '') +
+      this.renderSquareMid(rowIndex, colIndex)
+      , '');
+  }
+
+  renderRow = (row: number[], rowIndex: number): string => {
+    const topAndBot = this.renderRowTopOrBot(row, rowIndex);
+    const top = topAndBot;
+    const mid = this.renderRowMid(row, rowIndex);
+    const bot = topAndBot;
+    return `${top}\n${mid}\n${bot}`;
+  }
+
+  private renderBoard = (): string => {
     return this.board.reduce((prevRows, row, rowIndex) =>
-      prevRows +
+      prevRows + '\n' +
       (rowIndex > 0 ? '⬛⬛⬛⬛⬛⬛⬛⬛⬛' : '') + '\n' +
-      '⬜⬜⬜⬛⬜⬜⬜⬛⬜⬜⬜' + '\n' +
-      row.reduce((prevCells, cell, cellIndex) =>
-        prevCells +
-        (cellIndex > 0 ? '⬛' : '') +
-        '⬜' + '1️⃣' + '⬜', ''
-      ) + '\n' +
-      '⬜⬜⬜⬛⬜⬜⬜⬛⬜⬜⬜' + '\n'
+      this.renderRow(row, rowIndex)
       , '');
   }
 
