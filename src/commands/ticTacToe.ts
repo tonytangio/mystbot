@@ -74,7 +74,7 @@ const ticTacToe: Command = {
   aliases: ['ttt', 'xo', 'noughtsAndCrosses'],
   description: 'Challenge someone to a game of Tic-Tac-Toe',
   minArgs: 1,
-  usage: '`? tictactoe(@user)`',
+  usage: '`?tictactoe (@user)`',
   cooldown: 30,
   guildOnly: true,
   execute: async (message, args) => {
