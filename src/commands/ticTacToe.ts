@@ -79,7 +79,7 @@ const ticTacToe: Command = {
   guildOnly: true,
   execute: async (message, args) => {
     const tttGame = new TicTacToeGame(message.author, message.mentions.users.first());
-    const gameMessage: Discord.Message = await message.channel.send(tttGame.renderEmbed()) as Discord.Message;
+    const gameMessage = await message.channel.send(tttGame.renderEmbed()) as Discord.Message;
     gameMessage.react('1️⃣')
       .then(() => gameMessage.react('2️⃣'))
       .then(() => gameMessage.react('3️⃣'))
