@@ -128,7 +128,7 @@ class TicTacToeGame {
 	private endGame = (winner?: Discord.User) => {
 		const embed = buildEmbed({ title: 'Tic-Tac-Toe', description: `❌${this.player1} vs ⭕${this.player2}` });
 		embed.addField('Board', this.renderBoard());
-		embed.addField('Result', `${winner ? 'Winner: ' + winner : 'Draw'}`);
+		embed.addField('Result', winner ? 'Winner: ' + winner : 'Draw');
 		this.gameMessage.edit(embed);
 		this.collector.stop('[ticTacToe] ended.');
 	}
