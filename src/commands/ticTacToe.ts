@@ -12,7 +12,7 @@ class TicTacToeGame {
   ];
   constructor(private player1: Discord.User, private player2: Discord.User) { }
 
-  renderSquareTopOrBot = (rowIndex: number, colIndex: number): string => {
+  private renderSquareTopOrBot = (rowIndex: number, colIndex: number): string => {
     switch (this.board[rowIndex][colIndex]) {
       case 0: return '⬜⬜⬜'
       case 1: return '⬜⬜⬜'
@@ -21,7 +21,7 @@ class TicTacToeGame {
     }
   }
 
-  renderSquareMid = (rowIndex: number, colIndex: number): string => {
+  private renderSquareMid = (rowIndex: number, colIndex: number): string => {
     switch (this.board[rowIndex][colIndex]) {
       case 0: return `⬜${indexToEmoji[rowIndex * 3 + colIndex]}⬜`
       case 1: return '⬜❌⬜'
@@ -30,7 +30,7 @@ class TicTacToeGame {
     }
   }
 
-  renderRowTopOrBot = (row: number[], rowIndex: number): string => {
+  private renderRowTopOrBot = (row: number[], rowIndex: number): string => {
     return row.reduce((prevCols, _, colIndex) =>
       prevCols +
       (colIndex > 0 ? '⬛' : '') +
@@ -38,7 +38,7 @@ class TicTacToeGame {
       , '');
   }
 
-  renderRowMid = (row: number[], rowIndex: number): string => {
+  private renderRowMid = (row: number[], rowIndex: number): string => {
     return row.reduce((prevCols, _, colIndex) =>
       prevCols +
       (colIndex > 0 ? '⬛' : '') +
@@ -46,7 +46,7 @@ class TicTacToeGame {
       , '');
   }
 
-  renderRow = (row: number[], rowIndex: number): string => {
+  private renderRow = (row: number[], rowIndex: number): string => {
     const topAndBot = this.renderRowTopOrBot(row, rowIndex);
     const top = topAndBot;
     const mid = this.renderRowMid(row, rowIndex);
@@ -63,7 +63,7 @@ class TicTacToeGame {
   }
 
   renderEmbed = (): RichEmbed => {
-    const embed = buildEmbed({ title: 'Tic-Tac-Toe', description: `${this.player1} vs ${this.player2}` });
+    const embed = buildEmbed({ title: 'Tic-Tac-Toe', description: `❌${this.player1} vs ⭕${this.player2}` });
     embed.addField('Board', this.renderBoard())
     return embed;
   }
