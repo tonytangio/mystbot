@@ -15,7 +15,6 @@ class TicTacToeGame {
     [0, 0, 0]
   ];
   private activePlayer: Discord.User = this.player1;
-  gameMessage: Discord.Message | null = null;
   updateEmbed!: (embed: RichEmbed) => void;
 
   constructor(private player1: Discord.User, private player2: Discord.User) { }
