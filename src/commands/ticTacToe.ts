@@ -20,7 +20,7 @@ class TicTacToeGame {
   private gameMessage!: Discord.Message;
   private collector!: Discord.ReactionCollector;
 
-  constructor(private user1: Discord.User, private user2: Discord.User, channel: Discord.TextChannel) {
+  constructor(user1: Discord.User, user2: Discord.User, channel: Discord.TextChannel) {
     if (Math.random() < 0.5) {
       this.player1 = user1;
       this.player2 = user2;
