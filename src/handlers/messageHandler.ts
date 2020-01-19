@@ -1,5 +1,5 @@
 import config from '../config';
-import { Command } from '../interfaces/Command';
+import { Command } from '../commands/Command';
 import { commandHandler } from './commandHandler';
 import { ExtendedMessage } from '../types/extendedDiscordjs';
 

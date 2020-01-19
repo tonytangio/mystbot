@@ -1,6 +1,6 @@
 import Discord, { ClientOptions } from 'discord.js';
 import fs from 'fs';
-import { Command } from './interfaces/Command';
+import { Command } from './commands/Command';
 import { messageHandler } from './handlers/messageHandler';
 import { secret } from './config';
 

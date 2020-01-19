@@ -1,6 +1,6 @@
 import config from '../config';
 import Discord, { Message } from 'discord.js';
-import { Command } from '../interfaces/Command';
+import { Command } from '../commands/Command';
 import { Cooldowns } from '../mystbot';
 import { ExtendedMessage } from '../types/extendedDiscordjs';
 

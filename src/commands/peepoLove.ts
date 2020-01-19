@@ -1,7 +1,7 @@
 import Discord from 'discord.js';
 import fs from 'fs';
 import { Canvas, Image, loadImage } from 'canvas';
-import { Command } from '../interfaces/Command';
+import { Command } from './Command';
 
 const canvasLength = 512;
 const imageToLoveDiameter = 330;
@@ -18,7 +18,7 @@ const peepoLove: Command = {
   name: 'peepoLove',
   aliases: ['pepeLove', 'love', 'heart'],
   description: 'Give peepoLove to someone.',
-  usage: '`?peepoLove (image|user)`',
+  usage: '`?peepolove (image|@user)`',
   execute: async (message, args) => {
     let imageToLove;
     const attachedImage = message.attachments.first()?.url;

@@ -1,5 +1,5 @@
 import { buildEmbed } from '../utils/buildEmbed';
-import { Command } from '../interfaces/Command';
+import { Command } from './Command';
 
 const debug: Command = {
   name: 'debug',

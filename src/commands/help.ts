@@ -1,6 +1,6 @@
 import config from '../config';
 import { buildEmbed } from '../utils/buildEmbed';
-import { Command } from '../interfaces/Command';
+import { Command } from './Command';
 
 const help: Command = {
   name: 'help',
