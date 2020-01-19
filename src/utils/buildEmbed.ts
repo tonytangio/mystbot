@@ -5,7 +5,7 @@ interface params {
 	description: string;
 }
 
-export const buildEmbed = ({title, description}: params): Discord.RichEmbed => {
+export const buildEmbed = ({ title, description }: params): Discord.RichEmbed => {
 	return new Discord.RichEmbed()
 		.setTitle(title)
 		.setDescription(description)

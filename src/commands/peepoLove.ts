@@ -1,7 +1,7 @@
 import Discord from 'discord.js';
 import fs from 'fs';
-import {Canvas, Image, loadImage} from 'canvas';
-import {Command} from './Command';
+import { Canvas, Image, loadImage } from 'canvas';
+import { Command } from './Command';
 
 const canvasLength = 512;
 const imageToLoveDiameter = 330;

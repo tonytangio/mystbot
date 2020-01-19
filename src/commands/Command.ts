@@ -1,4 +1,4 @@
-import {ExtendedMessage} from '../types/extendedDiscordjs';
+import { ExtendedMessage } from '../types/extendedDiscordjs';
 
 export interface Command {
   name: string;

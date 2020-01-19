@@ -1,8 +1,8 @@
-import Discord, {ClientOptions} from 'discord.js';
+import Discord, { ClientOptions } from 'discord.js';
 import fs from 'fs';
-import {Command} from './commands/Command';
-import {messageHandler} from './handlers/messageHandler';
-import {secret} from './config';
+import { Command } from './commands/Command';
+import { messageHandler } from './handlers/messageHandler';
+import { secret } from './config';
 
 interface MystBotOptions extends ClientOptions {
 	token: string;
@@ -44,4 +44,4 @@ export class MystBot extends Discord.Client {
 	};
 }
 
-new MystBot({token: secret.token});
+new MystBot({ token: secret.token });

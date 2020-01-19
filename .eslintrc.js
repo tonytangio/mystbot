@@ -28,6 +28,10 @@ module.exports = {
             'error',
             'unix'
         ],
+        'object-curly-spacing': [
+            'error',
+            'always'
+        ],
         'quotes': [
             'error',
             'single'

@@ -1,8 +1,8 @@
 import config from '../config';
-import Discord, {Message} from 'discord.js';
-import {Command} from '../commands/Command';
-import {Cooldowns} from '../mystbot';
-import {ExtendedMessage} from '../types/extendedDiscordjs';
+import Discord, { Message } from 'discord.js';
+import { Command } from '../commands/Command';
+import { Cooldowns } from '../mystbot';
+import { ExtendedMessage } from '../types/extendedDiscordjs';
 
 const checkArgs = (command: Command, args: string[], message: Message): boolean => {
 	if (command.minArgs && args.length < command.minArgs) {
@@ -56,7 +56,7 @@ const checkAndManageCooldown = (
 };
 
 export const commandHandler = (command: Command, args: string[], message: ExtendedMessage): void => {
-	const {client} = message;
+	const { client } = message;
 
 	if (!checkArgs(command, args, message)) return;
 	if (!checkGuildOnlyOk(command.guildOnly, message.channel.type, message)) return;

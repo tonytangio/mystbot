@@ -1,6 +1,6 @@
 import config from '../config';
-import {buildEmbed} from '../utils/buildEmbed';
-import {Command} from './Command';
+import { buildEmbed } from '../utils/buildEmbed';
+import { Command } from './Command';
 
 const help: Command = {
 	name: 'help',
@@ -8,10 +8,10 @@ const help: Command = {
 	description: 'List all mystbot commands, or info on a specified command.',
 	usage: '`?help [commandName]`',
 	execute: (message, args) => {
-		const {commands} = message.client;
+		const { commands } = message.client;
 		if (!args.length) {
 			// No args: list all commands.
-			const embed = buildEmbed({title: help.name, description: help.description});
+			const embed = buildEmbed({ title: help.name, description: help.description });
 			embed
 				.addField('Commands', commands.map((command) => command.name).join(', '))
 				.addField(
