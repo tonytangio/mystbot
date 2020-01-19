@@ -6,33 +6,66 @@ const emojis = new Set(['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '
 const indexToEmoji = [...emojis];
 
 const boardPosToRow = (boardPos: number): number => Math.floor(boardPos / 3);
-const boardPosToCol = (boardPos: number): number => Math.floor(boardPos % 3);
+const boardPosToCol = (boardPos: number): number => boardPos % 3;
 
 class TicTacToeGame {
-  board: number[][] = [
+  private board: number[][] = [
     [0, 0, 0],
     [0, 0, 0],
     [0, 0, 0]
   ];
-  private activePlayer: Discord.User = this.player1;
-  updateEmbed!: (embed: RichEmbed) => void;
+  private player1: Discord.User;
+  private player2: Discord.User;
+  private activePlayer: Discord.User;
+  private gameMessage!: Discord.Message;
+  private collector!: Discord.ReactionCollector;
 
-  constructor(private player1: Discord.User, private player2: Discord.User) { }
+  constructor(private user1: Discord.User, private user2: Discord.User, channel: Discord.TextChannel) {
+    if (Math.random() < 0.5) {
+      this.player1 = user1;
+      this.player2 = user2;
+    } else {
+      this.player1 = user2;
+      this.player2 = user1;
+    }
+    this.activePlayer = this.player1;
+    this.initGameMessage(channel);
+    console.log(`[ticTacToe] Match started - player1: ${this.player1.username}, player2: ${this.player2.username}`);
+  }
 
-  mark = (boardPos: number) => {
+  private initGameMessage = async (channel: Discord.TextChannel) => {
+    this.gameMessage = await channel.send(this.renderEmbed()) as Discord.Message;
+    this.gameMessage.react('1️⃣')
+      .then(() => this.gameMessage.react('2️⃣'))
+      .then(() => this.gameMessage.react('3️⃣'))
+      .then(() => this.gameMessage.react('4️⃣'))
+      .then(() => this.gameMessage.react('5️⃣'))
+      .then(() => this.gameMessage.react('6️⃣'))
+      .then(() => this.gameMessage.react('7️⃣'))
+      .then(() => this.gameMessage.react('8️⃣'))
+      .then(() => this.gameMessage.react('9️⃣'))
+      .catch((error) => console.error(`[ticTacToe] Emoji failed to react in ${this.gameMessage}: ${error} `));
+
+    this.collector = this.gameMessage.createReactionCollector(this.moveFilter);
+    this.collector.on('collect', (reaction, _) => {
+      this.mark(indexToEmoji.indexOf(reaction.emoji.name));
+    });
+  }
+
+  private mark = (boardPos: number) => {
     const row = boardPosToRow(boardPos);
     const col = boardPosToCol(boardPos);
 
     this.board[row][col] = (this.activePlayer === this.player1) ? 1 : 2;
-    this.activePlayer = (this.activePlayer === this.player1) ? this.player2 : this.player1;
-
     console.log(`[ticTacToe] ${this.activePlayer.username} marked boardPos: ${boardPos} = ${this.board[row][col]}`);
+
+    this.activePlayer = (this.activePlayer === this.player1) ? this.player2 : this.player1;
     console.log(`[ticTacToe] activePlayer is now ${this.activePlayer.username}`);
 
     this.updateGameState();
   }
 
-  moveFilter = (reaction: MessageReaction, user: Discord.User): boolean => {
+  private moveFilter = (reaction: MessageReaction, user: Discord.User): boolean => {
     const boardPos = indexToEmoji.indexOf(reaction.emoji.name);
     const row = boardPosToRow(boardPos);
     const col = boardPosToCol(boardPos);
@@ -40,13 +73,6 @@ class TicTacToeGame {
     return emojis.has(reaction.emoji.name)
       && this.activePlayer === user
       && this.board[row][col] === 0;
-  }
-
-  renderEmbed = (): RichEmbed => {
-    const embed = buildEmbed({ title: 'Tic-Tac-Toe', description: `❌${this.player1} vs ⭕${this.player2}` });
-    embed.addField('Board', this.renderBoard());
-    embed.addField('To Move', `${this.activePlayer}'s turn`);
-    return embed;
   }
 
   private getPlayerByMark = (mark: number): Discord.User => mark === 1 ? this.player1 : this.player2;
@@ -96,14 +122,15 @@ class TicTacToeGame {
     }
 
     // Game continues
-    this.updateEmbed(this.renderEmbed());
+    this.gameMessage.edit(this.renderEmbed());
   }
 
   private endGame = (winner?: Discord.User) => {
     const embed = buildEmbed({ title: 'Tic-Tac-Toe', description: `❌${this.player1} vs ⭕${this.player2}` });
     embed.addField('Board', this.renderBoard());
     embed.addField('Result', `${winner ? 'Winner: ' + winner : 'Draw'}`)
-    this.updateEmbed(embed);
+    this.gameMessage.edit(embed);
+    this.collector.stop('[ticTacToe] ended.');
   }
 
   private renderSquareTopOrBot = (rowIndex: number, colIndex: number): string => {
@@ -111,7 +138,7 @@ class TicTacToeGame {
       case 0: return '⬜⬜⬜'
       case 1: return '⬜⬜⬜'
       case 2: return '⬜⬜⬜'
-      default: throw new Error(`[ticTacToe] invalid board state: ${this.board}`);
+      default: throw new Error(`[ticTacToe] Invalid board state: ${this.board}`);
     }
   }
 
@@ -120,31 +147,25 @@ class TicTacToeGame {
       case 0: return `⬜${indexToEmoji[rowIndex * 3 + colIndex]}⬜`
       case 1: return '⬜❌⬜'
       case 2: return '⬜⭕⬜'
-      default: throw new Error(`ticTacToe invalid board state: ${this.board}`);
+      default: throw new Error(`[ticTacToe] Invalid board state: ${this.board}`);
     }
   }
 
-  private renderRowTopOrBot = (row: number[], rowIndex: number): string => {
+  private renderRowInnerRow = (row: number[], rowIndex: number, isMid: boolean): string => {
     return row.reduce((prevCols, _, colIndex) =>
       prevCols +
       (colIndex > 0 ? '⬛' : '') +
-      this.renderSquareTopOrBot(rowIndex, colIndex)
-      , '');
-  }
-
-  private renderRowMid = (row: number[], rowIndex: number): string => {
-    return row.reduce((prevCols, _, colIndex) =>
-      prevCols +
-      (colIndex > 0 ? '⬛' : '') +
-      this.renderSquareMid(rowIndex, colIndex)
+      (isMid
+        ? this.renderSquareMid(rowIndex, colIndex)
+        : this.renderSquareTopOrBot(rowIndex, colIndex))
       , '');
   }
 
   private renderRow = (row: number[], rowIndex: number): string => {
-    const topAndBot = this.renderRowTopOrBot(row, rowIndex);
-    const top = topAndBot;
-    const mid = this.renderRowMid(row, rowIndex);
-    const bot = topAndBot;
+    // Top and Bot rows are identical
+    const top = this.renderRowInnerRow(row, rowIndex, false);
+    const mid = this.renderRowInnerRow(row, rowIndex, true);
+    const bot = top;
     return `${top}\n${mid}\n${bot}`;
   }
 
@@ -154,6 +175,13 @@ class TicTacToeGame {
       (rowIndex > 0 ? '⬛⬛⬛⬛⬛⬛⬛⬛⬛' : '') + '\n' +
       this.renderRow(row, rowIndex)
       , '');
+  }
+
+  private renderEmbed = (): RichEmbed => {
+    const embed = buildEmbed({ title: 'Tic-Tac-Toe', description: `❌${this.player1} vs ⭕${this.player2}` });
+    embed.addField('Board', this.renderBoard());
+    embed.addField('To Move', `${this.activePlayer}'s turn`);
+    return embed;
   }
 }
 
@@ -166,26 +194,14 @@ const ticTacToe: Command = {
   cooldown: 30,
   guildOnly: true,
   execute: async (message, args) => {
-    const tttGame = new TicTacToeGame(message.author, message.mentions.users.first());
-
-    const gameMessage = await message.channel.send(tttGame.renderEmbed()) as Discord.Message;
-    gameMessage.react('1️⃣')
-      .then(() => gameMessage.react('2️⃣'))
-      .then(() => gameMessage.react('3️⃣'))
-      .then(() => gameMessage.react('4️⃣'))
-      .then(() => gameMessage.react('5️⃣'))
-      .then(() => gameMessage.react('6️⃣'))
-      .then(() => gameMessage.react('7️⃣'))
-      .then(() => gameMessage.react('8️⃣'))
-      .then(() => gameMessage.react('9️⃣'))
-      .catch((error) => console.error(`Emoji failed to react in ${gameMessage}: ${error} `));
-
-    tttGame.updateEmbed = (embed: RichEmbed) => gameMessage.edit(embed);
-
-    const collector = gameMessage.createReactionCollector(tttGame.moveFilter);
-    collector.on('collect', (reaction, _) => {
-      tttGame.mark(indexToEmoji.indexOf(reaction.emoji.name));
-    })
+    if (!message.mentions.users.first()) {
+      throw new Error(`[ticTacToe] invalid mentioned user argument: ${message.mentions.users}`);
+    }
+    new TicTacToeGame(
+      message.author,
+      message.mentions.users.first(),
+      message.channel as Discord.TextChannel
+    );
   }
 };
 
