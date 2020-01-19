@@ -1,23 +1,50 @@
-import Discord, { RichEmbed } from 'discord.js';
+import Discord, { RichEmbed, MessageReaction } from 'discord.js';
 import { Command } from './Command';
 import { buildEmbed } from '../utils/buildEmbed';
 
-const indexToEmoji = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣'];
+const emojis = new Set(['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']);
+const indexToEmoji = [...emojis];
+
+const boardPosToRow = (boardPos: number): number => Math.floor(boardPos / 3);
+const boardPosToCol = (boardPos: number): number => Math.floor(boardPos % 3);
 
 class TicTacToeGame {
   board: number[][] = [
-    [1, 0, 2],
-    [0, 2, 1],
-    [0, 0, 1]
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0]
   ];
+  private activePlayer: Discord.User = this.player1;
+
   constructor(private player1: Discord.User, private player2: Discord.User) { }
+
+  mark = (boardPos: number) => {
+    const row = boardPosToRow(boardPos);
+    const col = boardPosToCol(boardPos);
+
+    this.board[row][col] = (this.activePlayer === this.player1) ? 1 : 2;
+    this.activePlayer = (this.activePlayer === this.player1) ? this.player2 : this.player1;
+
+    console.log(`[ticTacToe] ${this.activePlayer.username} marked boardPos: ${boardPos} = ${this.board[row][col]}`);
+    console.log(`[ticTacToe] activePlayer is now ${this.activePlayer.username}`);
+  }
+
+  moveFilter = (reaction: MessageReaction, user: Discord.User): boolean => {
+    const boardPos = indexToEmoji.indexOf(reaction.emoji.name);
+    const row = boardPosToRow(boardPos);
+    const col = boardPosToCol(boardPos);
+
+    return emojis.has(reaction.emoji.name)
+      && this.activePlayer === user
+      && this.board[row][col] === 0;
+  }
 
   private renderSquareTopOrBot = (rowIndex: number, colIndex: number): string => {
     switch (this.board[rowIndex][colIndex]) {
       case 0: return '⬜⬜⬜'
       case 1: return '⬜⬜⬜'
       case 2: return '⬜⬜⬜'
-      default: throw new Error(`ticTacToe invalid board state: ${this.board}`);
+      default: throw new Error(`[ticTacToe] invalid board state: ${this.board}`);
     }
   }
 
@@ -90,6 +117,11 @@ const ticTacToe: Command = {
       .then(() => gameMessage.react('8️⃣'))
       .then(() => gameMessage.react('9️⃣'))
       .catch((error) => console.error(`Emoji failed to react in ${gameMessage}: ${error} `));
+    const collector = gameMessage.createReactionCollector(tttGame.moveFilter);
+    collector.on('collect', (reaction, _) => {
+      tttGame.mark(indexToEmoji.indexOf(reaction.emoji.name));
+      gameMessage.edit(tttGame.renderEmbed());
+    })
   }
 };
 
