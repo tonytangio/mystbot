@@ -15,6 +15,8 @@ class TicTacToeGame {
     [0, 0, 0]
   ];
   private activePlayer: Discord.User = this.player1;
+  gameMessage: Discord.Message | null = null;
+  updateEmbed!: (embed: RichEmbed) => void;
 
   constructor(private player1: Discord.User, private player2: Discord.User) { }
 
@@ -27,6 +29,8 @@ class TicTacToeGame {
 
     console.log(`[ticTacToe] ${this.activePlayer.username} marked boardPos: ${boardPos} = ${this.board[row][col]}`);
     console.log(`[ticTacToe] activePlayer is now ${this.activePlayer.username}`);
+
+    this.updateGameState();
   }
 
   moveFilter = (reaction: MessageReaction, user: Discord.User): boolean => {
@@ -37,6 +41,70 @@ class TicTacToeGame {
     return emojis.has(reaction.emoji.name)
       && this.activePlayer === user
       && this.board[row][col] === 0;
+  }
+
+  renderEmbed = (): RichEmbed => {
+    const embed = buildEmbed({ title: 'Tic-Tac-Toe', description: `❌${this.player1} vs ⭕${this.player2}` });
+    embed.addField('Board', this.renderBoard());
+    embed.addField('To Move', `${this.activePlayer}'s turn`);
+    return embed;
+  }
+
+  private getPlayerByMark = (mark: number): Discord.User => mark === 1 ? this.player1 : this.player2;
+
+  private updateGameState = () => {
+    /* Check for game ending completions */
+    // Horizontal completions
+    for (let row = 0; row < 3; ++row) {
+      if (this.board[row][0] !== 0
+        && this.board[row][0] === this.board[row][1]
+        && this.board[row][1] === this.board[row][2]) {
+        return this.endGame(this.getPlayerByMark(this.board[row][0]));
+      }
+    }
+
+    // Vertical completions
+    for (let col = 0; col < 3; ++col) {
+      if (this.board[0][col] !== 0
+        && this.board[0][col] === this.board[1][col]
+        && this.board[1][col] === this.board[2][col]) {
+        return this.endGame(this.getPlayerByMark(this.board[0][col]));
+      }
+    }
+
+    // Diagonal completions
+    if (this.board[1][1] !== 0
+      && this.board[0][0] === this.board[1][1]
+      && this.board[1][1] === this.board[2][2]) {
+      return this.endGame(this.getPlayerByMark(this.board[1][1]));
+    }
+    if (this.board[1][1] !== 0
+      && this.board[0][2] === this.board[1][1]
+      && this.board[1][1] === this.board[2][0]) {
+      return this.endGame(this.getPlayerByMark(this.board[1][1]));
+    }
+
+    // No available moves remaining
+    let hasAvailableMove: boolean = false;
+    for (let pos = 0; pos < 9; ++pos) {
+      if (this.board[boardPosToRow(pos)][boardPosToCol(pos)] == 0) {
+        hasAvailableMove = true;
+        break;
+      }
+    }
+    if (!hasAvailableMove) {
+      return this.endGame()
+    }
+
+    // Game continues
+    this.updateEmbed(this.renderEmbed());
+  }
+
+  private endGame = (winner?: Discord.User) => {
+    const embed = buildEmbed({ title: 'Tic-Tac-Toe', description: `❌${this.player1} vs ⭕${this.player2}` });
+    embed.addField('Board', this.renderBoard());
+    embed.addField('Result', `${winner ? 'Winner: ' + winner : 'Draw'}`)
+    this.updateEmbed(embed);
   }
 
   private renderSquareTopOrBot = (rowIndex: number, colIndex: number): string => {
@@ -88,12 +156,6 @@ class TicTacToeGame {
       this.renderRow(row, rowIndex)
       , '');
   }
-
-  renderEmbed = (): RichEmbed => {
-    const embed = buildEmbed({ title: 'Tic-Tac-Toe', description: `❌${this.player1} vs ⭕${this.player2}` });
-    embed.addField('Board', this.renderBoard())
-    return embed;
-  }
 }
 
 const ticTacToe: Command = {
@@ -106,6 +168,7 @@ const ticTacToe: Command = {
   guildOnly: true,
   execute: async (message, args) => {
     const tttGame = new TicTacToeGame(message.author, message.mentions.users.first());
+
     const gameMessage = await message.channel.send(tttGame.renderEmbed()) as Discord.Message;
     gameMessage.react('1️⃣')
       .then(() => gameMessage.react('2️⃣'))
@@ -117,10 +180,12 @@ const ticTacToe: Command = {
       .then(() => gameMessage.react('8️⃣'))
       .then(() => gameMessage.react('9️⃣'))
       .catch((error) => console.error(`Emoji failed to react in ${gameMessage}: ${error} `));
+
+    tttGame.updateEmbed = (embed: RichEmbed) => gameMessage.edit(embed);
+
     const collector = gameMessage.createReactionCollector(tttGame.moveFilter);
     collector.on('collect', (reaction, _) => {
       tttGame.mark(indexToEmoji.indexOf(reaction.emoji.name));
-      gameMessage.edit(tttGame.renderEmbed());
     })
   }
 };
