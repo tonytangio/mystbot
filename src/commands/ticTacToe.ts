@@ -18,7 +18,7 @@ class TicTacToeGame {
 	private player2: Discord.User;
 	private activePlayer: Discord.User;
 	updateGameMessage!: (embed: RichEmbed) => void;
-	stopCollector!: () => void;
+	stopCollector!: (reason?: string) => void;
 
 	constructor(user1: Discord.User, user2: Discord.User) {
 		if (Math.random() < 0.5) {
@@ -102,15 +102,15 @@ class TicTacToeGame {
 		}
 
 		// Game continues
-		this.gameMessage.edit(this.renderEmbed());
+		this.updateGameMessage(this.renderEmbed());
 	}
 
 	private endGame = (winner?: Discord.User) => {
 		const embed = buildEmbed({ title: 'Tic-Tac-Toe', description: `❌${this.player1} vs ⭕${this.player2}` });
 		embed.addField('Board', this.renderBoard());
 		embed.addField('Result', winner ? 'Winner: ' + winner : 'Draw');
-		this.gameMessage.edit(embed);
-		this.collector.stop('[ticTacToe] ended.');
+		this.updateGameMessage(embed);
+		this.stopCollector('[ticTacToe] ended.');
 	}
 
 	private renderSquareTopOrBot = (rowIndex: number, colIndex: number): string => {
@@ -197,7 +197,7 @@ const ticTacToe: Command = {
 		collector.on('collect', (reaction, _) => {
 			tttGame.mark(indexToEmoji.indexOf(reaction.emoji.name));
 		});
-		tttGame.stopCollector = () => collector.stop();
+		tttGame.stopCollector = (reason?: string) => collector.stop(reason);
 	}
 };
 
