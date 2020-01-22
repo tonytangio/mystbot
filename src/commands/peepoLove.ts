@@ -23,11 +23,11 @@ const peepoLove: Command = {
 		let imageToLove;
 		const attachedImage = message.attachments.first()?.url;
 		const targetUser = message.mentions.members.first()?.user;
-		if (attachedImage) {
+		if (attachedImage) 
 			imageToLove = await loadImage(attachedImage);
-		} else if (targetUser) {
+		else if (targetUser) 
 			imageToLove = await loadImage(targetUser.avatarURL);
-		} else {
+		else {
 			// TODO: Send original peepoLove image if no specified imageToLove
 			message.reply('`peepoLove` requires an attached image or a mentioned user to be loved.');
 			return;

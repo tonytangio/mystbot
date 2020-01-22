@@ -63,43 +63,43 @@ class TicTacToeGame {
 		for (let row = 0; row < 3; ++row) {
 			if (this.board[row][0] !== 0 &&
 				this.board[row][0] === this.board[row][1] &&
-				this.board[row][1] === this.board[row][2]) {
+				this.board[row][1] === this.board[row][2]) 
 				return this.endGame(this.getPlayerByMark(this.board[row][0]));
-			}
+			
 		}
 
 		// Vertical completions
 		for (let col = 0; col < 3; ++col) {
 			if (this.board[0][col] !== 0 &&
 				this.board[0][col] === this.board[1][col] &&
-				this.board[1][col] === this.board[2][col]) {
+				this.board[1][col] === this.board[2][col]) 
 				return this.endGame(this.getPlayerByMark(this.board[0][col]));
-			}
+			
 		}
 
 		// Diagonal completions
 		if (this.board[1][1] !== 0 &&
 			this.board[0][0] === this.board[1][1] &&
-			this.board[1][1] === this.board[2][2]) {
+			this.board[1][1] === this.board[2][2]) 
 			return this.endGame(this.getPlayerByMark(this.board[1][1]));
-		}
+		
 		if (this.board[1][1] !== 0 &&
 			this.board[0][2] === this.board[1][1] &&
-			this.board[1][1] === this.board[2][0]) {
+			this.board[1][1] === this.board[2][0]) 
 			return this.endGame(this.getPlayerByMark(this.board[1][1]));
-		}
+		
 
 		// No available moves remaining
 		let hasAvailableMove: boolean = false;
 		for (let pos = 0; pos < 9; ++pos) {
-			if (this.board[boardPosToRow(pos)][boardPosToCol(pos)] == 0) {
+			if (this.board[boardPosToRow(pos)][boardPosToCol(pos)] === 0) {
 				hasAvailableMove = true;
 				break;
 			}
 		}
-		if (!hasAvailableMove) {
+		if (!hasAvailableMove) 
 			return this.endGame();
-		}
+		
 
 		// Game continues
 		this.updateGameMessage(this.renderEmbed());
@@ -174,9 +174,9 @@ const ticTacToe: Command = {
 	cooldown: 30,
 	guildOnly: true,
 	execute: async (message, args) => {
-		if (!message.mentions.users.first()) {
+		if (!message.mentions.users.first())
 			throw new Error(`[ticTacToe] invalid mentioned user argument: ${message.mentions.users}`);
-		}
+		
 		const tttGame = new TicTacToeGame(message.author, message.mentions.users.first());
 
 		const gameMessage = await message.channel.send(tttGame.renderEmbed()) as Discord.Message;

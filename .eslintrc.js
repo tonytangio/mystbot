@@ -20,6 +20,11 @@ module.exports = {
         '@typescript-eslint'
     ],
     'rules': {
+        'curly': [
+            'error',
+            'multi-or-nest'
+        ],
+        'eqeqeq': 'error',
         'indent': [
             'error',
             'tab'
@@ -32,6 +37,11 @@ module.exports = {
             'error',
             'always'
         ],
+        'no-useless-return': 'error',
+        'prefer-destructuring': ['error', {
+            'object': true,
+            'array': true
+        }],
         'quotes': [
             'error',
             'single'

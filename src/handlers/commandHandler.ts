@@ -8,9 +8,9 @@ const checkArgs = (command: Command, args: string[], message: Message): boolean 
 	if (command.minArgs && args.length < command.minArgs) {
 		let reply = `\`?${command.name}\` requires ${command.minArgs} or more arguments`;
 		reply += ` - you provided ${args.length} argument${args.length === 1 ? '' : 's'}.`;
-		if (command.usage) {
+		if (command.usage) 
 			reply += `\nUsage: \`${command.usage}\``;
-		}
+		
 		message.reply(reply);
 		return false;
 	}
@@ -31,9 +31,9 @@ const checkAndManageCooldown = (
 	authorId: string,
 	message: Message,
 ): boolean => {
-	if (!cooldowns.has(command.name)) {
+	if (!cooldowns.has(command.name)) 
 		cooldowns.set(command.name, new Discord.Collection<string, number>());
-	}
+	
 
 	const now = Date.now();
 	const authorIdToCooldownStartTime = cooldowns.get(command.name)!;

@@ -8,9 +8,9 @@ export const messageHandler = (message: ExtendedMessage): void => {
 		!message.content.startsWith(config.prefix) ||
 		message.author.bot ||
 		message.content.length === config.prefix.length
-	) {
+	) 
 		return;
-	}
+	
 
 	const args: string[] = message.content.slice(config.prefix.length).split(/ +/);
 	const commandName: string = args.shift()?.toLowerCase()!;
