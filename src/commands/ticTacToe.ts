@@ -17,10 +17,10 @@ class TicTacToeGame {
 	private player1: Discord.User;
 	private player2: Discord.User;
 	private activePlayer: Discord.User;
-	private gameMessage!: Discord.Message;
-	private collector!: Discord.ReactionCollector;
+	updateGameMessage!: (embed: RichEmbed) => void;
+	stopCollector!: () => void;
 
-	constructor(user1: Discord.User, user2: Discord.User, channel: Discord.TextChannel) {
+	constructor(user1: Discord.User, user2: Discord.User) {
 		if (Math.random() < 0.5) {
 			this.player1 = user1;
 			this.player2 = user2;
@@ -29,30 +29,10 @@ class TicTacToeGame {
 			this.player2 = user1;
 		}
 		this.activePlayer = this.player1;
-		this.initGameMessage(channel);
 		console.log(`[ticTacToe] Match started - player1: ${this.player1.username}, player2: ${this.player2.username}`);
 	}
 
-	private initGameMessage = async (channel: Discord.TextChannel) => {
-		this.gameMessage = await channel.send(this.renderEmbed()) as Discord.Message;
-		this.gameMessage.react('1️⃣')
-			.then(() => this.gameMessage.react('2️⃣'))
-			.then(() => this.gameMessage.react('3️⃣'))
-			.then(() => this.gameMessage.react('4️⃣'))
-			.then(() => this.gameMessage.react('5️⃣'))
-			.then(() => this.gameMessage.react('6️⃣'))
-			.then(() => this.gameMessage.react('7️⃣'))
-			.then(() => this.gameMessage.react('8️⃣'))
-			.then(() => this.gameMessage.react('9️⃣'))
-			.catch((error) => console.error(`[ticTacToe] Emoji failed to react in ${this.gameMessage}: ${error} `));
-
-		this.collector = this.gameMessage.createReactionCollector(this.moveFilter);
-		this.collector.on('collect', (reaction, _) => {
-			this.mark(indexToEmoji.indexOf(reaction.emoji.name));
-		});
-	}
-
-	private mark = (boardPos: number) => {
+	mark = (boardPos: number) => {
 		const row = boardPosToRow(boardPos);
 		const col = boardPosToCol(boardPos);
 
@@ -65,7 +45,7 @@ class TicTacToeGame {
 		this.updateGameState();
 	}
 
-	private moveFilter = (reaction: MessageReaction, user: Discord.User): boolean => {
+	moveFilter = (reaction: MessageReaction, user: Discord.User): boolean => {
 		const boardPos = indexToEmoji.indexOf(reaction.emoji.name);
 		const row = boardPosToRow(boardPos);
 		const col = boardPosToCol(boardPos);
@@ -177,7 +157,7 @@ class TicTacToeGame {
 		, '');
 	}
 
-	private renderEmbed = (): RichEmbed => {
+	renderEmbed = (): RichEmbed => {
 		const embed = buildEmbed({ title: 'Tic-Tac-Toe', description: `❌${this.player1} vs ⭕${this.player2}` });
 		embed.addField('Board', this.renderBoard());
 		embed.addField('To Move', `${this.activePlayer}'s turn`);
@@ -197,12 +177,28 @@ const ticTacToe: Command = {
 		if (!message.mentions.users.first()) {
 			throw new Error(`[ticTacToe] invalid mentioned user argument: ${message.mentions.users}`);
 		}
-		new TicTacToeGame(
-			message.author,
-			message.mentions.users.first(),
-			message.channel as Discord.TextChannel,
-		);
-	},
+		const tttGame = new TicTacToeGame(message.author, message.mentions.users.first());
+
+		const gameMessage = await message.channel.send(tttGame.renderEmbed()) as Discord.Message;
+		gameMessage.react('1️⃣')
+			.then(() => gameMessage.react('2️⃣'))
+			.then(() => gameMessage.react('3️⃣'))
+			.then(() => gameMessage.react('4️⃣'))
+			.then(() => gameMessage.react('5️⃣'))
+			.then(() => gameMessage.react('6️⃣'))
+			.then(() => gameMessage.react('7️⃣'))
+			.then(() => gameMessage.react('8️⃣'))
+			.then(() => gameMessage.react('9️⃣'))
+			.catch((error) => console.error(`[ticTacToe] Emoji failed to react in ${gameMessage}: ${error} `));
+
+		tttGame.updateGameMessage = (embed: RichEmbed) => gameMessage.edit(embed);
+		
+		const collector = gameMessage.createReactionCollector(tttGame.moveFilter);
+		collector.on('collect', (reaction, _) => {
+			tttGame.mark(indexToEmoji.indexOf(reaction.emoji.name));
+		});
+		tttGame.stopCollector = () => collector.stop();
+	}
 };
 
 export const command = ticTacToe;
