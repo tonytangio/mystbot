@@ -190,7 +190,6 @@ const ticTacToe: Command = {
 			.then(() => gameMessage.react('8️⃣'))
 			.then(() => gameMessage.react('9️⃣'))
 			.catch((error) => console.error(`[ticTacToe] Emoji failed to react in ${gameMessage}: ${error} `));
-
 		tttGame.updateGameMessage = (embed: RichEmbed) => gameMessage.edit(embed);
 		
 		const collector = gameMessage.createReactionCollector(tttGame.moveFilter);
