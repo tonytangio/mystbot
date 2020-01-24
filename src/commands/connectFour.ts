@@ -7,18 +7,34 @@ const indexToEmoji = [...emojis];
 
 type Piece = 1 | 2;
 type State = Piece | 0;
+type Col = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 type Row = 0 | 1 | 2 | 3 | 4 | 5;
+
+const isCol = (n: number): n is Col => n >= 0 && n <= 6;
+const isRow = (n: number): n is Row => n >= 0 && n <= 5;
+
+enum colDir {
+  Right = 1,
+  Left = -1
+}
+
+enum rowDir {
+  Up = 1,
+  Down = -1,
+}
 
 class ColumnStack {
   private topIndex: Row = 0;
   private container: Piece[] = [];
   constructor(private capacity: number) { }
 
-  drop = (p: Piece) => {
+  drop = (p: Piece): Row => {
     if (this.isFull())
       throw new Error('[connectFour] Invalid drop attempt - full');
     this.container[this.topIndex] = p;
+    const droppedRow = this.topIndex;
     ++this.topIndex;
+    return droppedRow;
   }
 
   isFull = (): boolean => this.topIndex === this.capacity;
@@ -55,12 +71,13 @@ class ConnectFourGame {
     console.log(`[connectFour] Match started - player1: ${this.player1.username}, player2: ${this.player2.username}`);
   }
 
-  drop = (col: number) => {
-    this.grid[col].drop(this.activePlayerPiece);
+  drop = (col: Col) => {
+    const droppedRow = this.grid[col].drop(this.activePlayerPiece);
+    const droppedPiece = this.activePlayerPiece; 
     this.activePlayerPiece = this.activePlayerPiece === 1 ? 2 : 1;
     console.log(`[connectFour] activePlayer is now ${this.getActivePlayer().username}`);
 
-    this.updateGameState();
+    this.updateGameState(col, droppedRow, droppedPiece);
   }
 
   moveFilter = (reaction: MessageReaction, user: Discord.User): boolean => {
@@ -72,20 +89,56 @@ class ConnectFourGame {
 
   private getPlayerByPiece = (piece: Piece): Discord.User => piece === 1 ? this.player1 : this.player2;
   private getActivePlayer = (): Discord.User => this.getPlayerByPiece(this.activePlayerPiece);
+  private stateAt = (col: Col, row: Row): State => this.grid[col].at(row);
 
-  private updateGameState = () => {
+  private checkDir = (col: number, row: number, piece: Piece, colDelta: -1 | 0 | 1, rowDelta: -1 | 0 | 1): number => {
+    if(!isCol(col) || !isRow(row) || this.stateAt(col, row) !== piece)
+      return 0;
+    return 1 + this.checkDir(col + colDelta, row + rowDelta, piece, colDelta, rowDelta);
+  }
+
+  private checkHorizontal = (col: Col, row: Row, piece: Piece): boolean => {
+    return 1 
+         + this.checkDir(col + colDir.Left, row, piece, colDir.Left, 0)
+         + this.checkDir(col + colDir.Right, row, piece, colDir.Right, 0) 
+         >= 4;
+  }
+
+  private checkVertical = (col: Col, row: Row, piece: Piece): boolean => {
+    return 1 
+         + this.checkDir(col, row + rowDir.Up, piece, 0, rowDir.Up)
+         + this.checkDir(col, row + rowDir.Down, piece, 0, rowDir.Down) 
+         >= 4;
+  }
+
+  private checkDiagonals = (col: Col, row: Row, piece: Piece): boolean => {
+    return (1 
+          + this.checkDir(col + colDir.Right, row + rowDir.Up, piece, colDir.Right, rowDir.Up)
+          + this.checkDir(col + colDir.Left, row + rowDir.Down, piece, colDir.Left, rowDir.Down) 
+          >= 4) 
+        || (1 
+          + this.checkDir(col + colDir.Right, row + rowDir.Down, piece, colDir.Right, rowDir.Down)
+          + this.checkDir(col + colDir.Left, row + rowDir.Up, piece, colDir.Left, rowDir.Up) 
+          >= 4) ;
+  }
+
+  private updateGameState = (col: Col, row: Row, piece: Piece) => {
     /* Check for game ending completions */
+    if (this.checkHorizontal(col, row, piece)
+     || this.checkVertical(col, row, piece)
+     || this.checkDiagonals(col, row, piece))
+      return this.endGame(this.getPlayerByPiece(piece));
 
     // Game continues
     this.updateGameMessage(this.renderEmbed());
   }
 
   private endGame = (winner?: Discord.User) => {
-    const embed = buildEmbed({ title: 'Tic-Tac-Toe', description: `❌${this.player1} vs ⭕${this.player2}` });
+    const embed = buildEmbed({ title: 'Connect Four', description: `🔴${this.player1} vs 🔵${this.player2}` });
     embed.addField('Board', this.renderGrid());
     embed.addField('Result', winner ? 'Winner: ' + winner : 'Draw');
     this.updateGameMessage(embed);
-    this.stopCollector('[ticTacToe] ended.');
+    this.stopCollector('[connectFour] ended.');
   }
 
   private renderGrid = (): string => {
@@ -138,7 +191,7 @@ const connectFour: Command = {
 
     const collector = gameMessage.createReactionCollector(c4Game.moveFilter);
     collector.on('collect', (reaction, _) => {
-      c4Game.drop(indexToEmoji.indexOf(reaction.emoji.name));
+      c4Game.drop(indexToEmoji.indexOf(reaction.emoji.name) as Col);
     });
     c4Game.stopCollector = (reason?: string) => collector.stop(reason);
   }
