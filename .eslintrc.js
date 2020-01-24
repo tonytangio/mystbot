@@ -37,6 +37,10 @@ module.exports = {
             'error',
             'always'
         ],
+        'operator-linebreak': [
+            'error',
+            'before'
+        ],
         'no-useless-return': 'error',
         'prefer-destructuring': ['error', {
             'object': true,

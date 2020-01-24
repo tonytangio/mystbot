@@ -50,9 +50,9 @@ class TicTacToeGame {
 		const row = boardPosToRow(boardPos);
 		const col = boardPosToCol(boardPos);
 
-		return emojis.has(reaction.emoji.name) &&
-			this.activePlayer === user &&
-			this.board[row][col] === 0;
+		return emojis.has(reaction.emoji.name)
+			&& this.activePlayer === user
+			&& this.board[row][col] === 0;
 	}
 
 	private getPlayerByMark = (mark: number): Discord.User => mark === 1 ? this.player1 : this.player2;
@@ -63,31 +63,31 @@ class TicTacToeGame {
 		for (let row = 0; row < 3; ++row) {
 			if (this.board[row][0] !== 0 &&
 				this.board[row][0] === this.board[row][1] &&
-				this.board[row][1] === this.board[row][2]) 
+				this.board[row][1] === this.board[row][2])
 				return this.endGame(this.getPlayerByMark(this.board[row][0]));
-			
+
 		}
 
 		// Vertical completions
 		for (let col = 0; col < 3; ++col) {
 			if (this.board[0][col] !== 0 &&
 				this.board[0][col] === this.board[1][col] &&
-				this.board[1][col] === this.board[2][col]) 
+				this.board[1][col] === this.board[2][col])
 				return this.endGame(this.getPlayerByMark(this.board[0][col]));
-			
+
 		}
 
 		// Diagonal completions
 		if (this.board[1][1] !== 0 &&
 			this.board[0][0] === this.board[1][1] &&
-			this.board[1][1] === this.board[2][2]) 
+			this.board[1][1] === this.board[2][2])
 			return this.endGame(this.getPlayerByMark(this.board[1][1]));
-		
+
 		if (this.board[1][1] !== 0 &&
 			this.board[0][2] === this.board[1][1] &&
-			this.board[1][1] === this.board[2][0]) 
+			this.board[1][1] === this.board[2][0])
 			return this.endGame(this.getPlayerByMark(this.board[1][1]));
-		
+
 
 		// No available moves remaining
 		let hasAvailableMove: boolean = false;
@@ -97,9 +97,9 @@ class TicTacToeGame {
 				break;
 			}
 		}
-		if (!hasAvailableMove) 
+		if (!hasAvailableMove)
 			return this.endGame();
-		
+
 
 		// Game continues
 		this.updateGameMessage(this.renderEmbed());
@@ -115,19 +115,19 @@ class TicTacToeGame {
 
 	private renderSquareTopOrBot = (rowIndex: number, colIndex: number): string => {
 		switch (this.board[rowIndex][colIndex]) {
-		case 0: return '⬜⬜⬜';
-		case 1: return '⬜⬜⬜';
-		case 2: return '⬜⬜⬜';
-		default: throw new Error(`[ticTacToe] Invalid board state: ${this.board}`);
+			case 0: return '⬜⬜⬜';
+			case 1: return '⬜⬜⬜';
+			case 2: return '⬜⬜⬜';
+			default: throw new Error(`[ticTacToe] Invalid board state: ${this.board}`);
 		}
 	}
 
 	private renderSquareMid = (rowIndex: number, colIndex: number): string => {
 		switch (this.board[rowIndex][colIndex]) {
-		case 0: return `⬜${indexToEmoji[rowIndex * 3 + colIndex]}⬜`;
-		case 1: return '⬜❌⬜';
-		case 2: return '⬜⭕⬜';
-		default: throw new Error(`[ticTacToe] Invalid board state: ${this.board}`);
+			case 0: return `⬜${indexToEmoji[rowIndex * 3 + colIndex]}⬜`;
+			case 1: return '⬜❌⬜';
+			case 2: return '⬜⭕⬜';
+			default: throw new Error(`[ticTacToe] Invalid board state: ${this.board}`);
 		}
 	}
 
@@ -138,7 +138,7 @@ class TicTacToeGame {
 			(isMid ?
 				this.renderSquareMid(rowIndex, colIndex) :
 				this.renderSquareTopOrBot(rowIndex, colIndex))
-		, '');
+			, '');
 	}
 
 	private renderRow = (row: number[], rowIndex: number): string => {
@@ -154,7 +154,7 @@ class TicTacToeGame {
 			prevRows + '\n' +
 			(rowIndex > 0 ? '⬛⬛⬛⬛⬛⬛⬛⬛⬛' : '') + '\n' +
 			this.renderRow(row, rowIndex)
-		, '');
+			, '');
 	}
 
 	renderEmbed = (): RichEmbed => {
@@ -176,7 +176,7 @@ const ticTacToe: Command = {
 	execute: async (message, args) => {
 		if (!message.mentions.users.first())
 			throw new Error(`[ticTacToe] invalid mentioned user argument: ${message.mentions.users}`);
-		
+
 		const tttGame = new TicTacToeGame(message.author, message.mentions.users.first());
 
 		const gameMessage = await message.channel.send(tttGame.renderEmbed()) as Discord.Message;
@@ -191,7 +191,7 @@ const ticTacToe: Command = {
 			.then(() => gameMessage.react('9️⃣'))
 			.catch((error) => console.error(`[ticTacToe] Emoji failed to react in ${gameMessage}: ${error} `));
 		tttGame.updateGameMessage = (embed: RichEmbed) => gameMessage.edit(embed);
-		
+
 		const collector = gameMessage.createReactionCollector(tttGame.moveFilter);
 		collector.on('collect', (reaction, _) => {
 			tttGame.mark(indexToEmoji.indexOf(reaction.emoji.name));
