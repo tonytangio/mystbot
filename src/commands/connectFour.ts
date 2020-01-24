@@ -99,27 +99,27 @@ class ConnectFourGame {
 
   private checkHorizontal = (col: Col, row: Row, piece: Piece): boolean => {
     return 1 
-         + this.checkDir(col + colDir.Left, row, piece, colDir.Left, 0)
-         + this.checkDir(col + colDir.Right, row, piece, colDir.Right, 0) 
-         >= 4;
+           + this.checkDir(col + colDir.Left, row, piece, colDir.Left, 0)
+           + this.checkDir(col + colDir.Right, row, piece, colDir.Right, 0) 
+        >= 4;
   }
 
   private checkVertical = (col: Col, row: Row, piece: Piece): boolean => {
     return 1 
-         + this.checkDir(col, row + rowDir.Up, piece, 0, rowDir.Up)
-         + this.checkDir(col, row + rowDir.Down, piece, 0, rowDir.Down) 
-         >= 4;
+           + this.checkDir(col, row + rowDir.Up, piece, 0, rowDir.Up)
+           + this.checkDir(col, row + rowDir.Down, piece, 0, rowDir.Down) 
+        >= 4;
   }
 
   private checkDiagonals = (col: Col, row: Row, piece: Piece): boolean => {
     return (1 
             + this.checkDir(col + colDir.Right, row + rowDir.Up, piece, colDir.Right, rowDir.Up)
             + this.checkDir(col + colDir.Left, row + rowDir.Down, piece, colDir.Left, rowDir.Down) 
-            >= 4) 
+         >= 4) 
         || (1 
             + this.checkDir(col + colDir.Right, row + rowDir.Down, piece, colDir.Right, rowDir.Down)
             + this.checkDir(col + colDir.Left, row + rowDir.Up, piece, colDir.Left, rowDir.Up) 
-            >= 4) ;
+         >= 4);
   }
 
   private updateGameState = (col: Col, row: Row, piece: Piece) => {
@@ -143,8 +143,6 @@ class ConnectFourGame {
 
   private renderGrid = (): string => {
     let render = '';
-    render += '1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣\n';
-    render += '⬛⬛⬛⬛⬛⬛⬛\n';
     for (let row = this.columnHeight - 1 as Row; row >= 0; --row) {
       render += this.grid.reduce((prevCol, col) =>
         prevCol
@@ -153,6 +151,7 @@ class ConnectFourGame {
               : '⏹️')
       , '') + '\n';
     }
+    render += '1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣';
     return render;
   }
 
