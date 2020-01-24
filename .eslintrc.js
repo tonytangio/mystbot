@@ -27,7 +27,8 @@ module.exports = {
         'eqeqeq': 'error',
         'indent': [
             'error',
-            'tab'
+            2,
+            { 'SwitchCase': 2 }
         ],
         'linebreak-style': [
             'error',

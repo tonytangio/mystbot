@@ -1,6 +1,6 @@
 const config = {
-	cooldownDefault: 3,
-	prefix: '?',
+  cooldownDefault: 3,
+  prefix: '?',
 };
 
 export default config;

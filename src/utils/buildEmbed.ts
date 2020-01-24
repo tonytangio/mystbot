@@ -6,8 +6,8 @@ interface params {
 }
 
 export const buildEmbed = ({ title, description }: params): Discord.RichEmbed => {
-	return new Discord.RichEmbed()
-		.setTitle(title)
-		.setDescription(description)
-		.setColor('DARK_PURPLE');
+  return new Discord.RichEmbed()
+    .setTitle(title)
+    .setDescription(description)
+    .setColor('DARK_PURPLE');
 };
