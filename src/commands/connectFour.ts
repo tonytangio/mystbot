@@ -91,7 +91,7 @@ class ConnectFourGame {
   private getActivePlayer = (): Discord.User => this.getPlayerByPiece(this.activePlayerPiece);
   private stateAt = (col: Col, row: Row): State => this.grid[col].at(row);
 
-  private checkDir = (col: number, row: number, piece: Piece, colDelta: -1 | 0 | 1, rowDelta: -1 | 0 | 1): number => {
+  private checkDir = (col: number, row: number, piece: Piece, colDelta: colDir | 0, rowDelta: rowDir | 0): number => {
     if(!isCol(col) || !isRow(row) || this.stateAt(col, row) !== piece)
       return 0;
     return 1 + this.checkDir(col + colDelta, row + rowDelta, piece, colDelta, rowDelta);
