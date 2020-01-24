@@ -10,7 +10,7 @@ type State = Piece | 0;
 type Row = 0 | 1 | 2 | 3 | 4 | 5;
 
 class ColumnStack {
-  private topIndex = 0;
+  private topIndex: Row = 0;
   private container: Piece[] = [];
   constructor(private capacity: number) { }
 
@@ -23,7 +23,7 @@ class ColumnStack {
 
   isFull = (): boolean => this.topIndex === this.capacity;
 
-  at = (index: Row): State => (index < this.topIndex) ? this.container[index] : 0;
+  at = (index: number): State => (index < this.topIndex) ? this.container[index] : 0;
 }
 
 class ConnectFourGame {
@@ -113,7 +113,7 @@ class ConnectFourGame {
 const connectFour: Command = {
   name: 'connectFour',
   aliases: ['c4', 'con4', 'conn4', 'connect4'],
-  description: 'Challenge someone to a game of Connect Four',
+  description: 'Challenge someone to a game of Connect Four.',
   minArgs: 1,
   usage: '`?connect4 (@user)`',
   cooldown: 30,
