@@ -113,13 +113,13 @@ class ConnectFourGame {
 
   private checkDiagonals = (col: Col, row: Row, piece: Piece): boolean => {
     return (1 
-          + this.checkDir(col + colDir.Right, row + rowDir.Up, piece, colDir.Right, rowDir.Up)
-          + this.checkDir(col + colDir.Left, row + rowDir.Down, piece, colDir.Left, rowDir.Down) 
-          >= 4) 
+            + this.checkDir(col + colDir.Right, row + rowDir.Up, piece, colDir.Right, rowDir.Up)
+            + this.checkDir(col + colDir.Left, row + rowDir.Down, piece, colDir.Left, rowDir.Down) 
+            >= 4) 
         || (1 
-          + this.checkDir(col + colDir.Right, row + rowDir.Down, piece, colDir.Right, rowDir.Down)
-          + this.checkDir(col + colDir.Left, row + rowDir.Up, piece, colDir.Left, rowDir.Up) 
-          >= 4) ;
+            + this.checkDir(col + colDir.Right, row + rowDir.Down, piece, colDir.Right, rowDir.Down)
+            + this.checkDir(col + colDir.Left, row + rowDir.Up, piece, colDir.Left, rowDir.Up) 
+            >= 4) ;
   }
 
   private updateGameState = (col: Col, row: Row, piece: Piece) => {
