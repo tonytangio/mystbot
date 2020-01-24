@@ -39,7 +39,7 @@ class ConnectFourGame {
   ];
   private player1: Discord.User;
   private player2: Discord.User;
-  private activePlayer: Discord.User;
+  private activePlayerPiece: Piece;
   updateGameMessage!: (embed: RichEmbed) => void;
   stopCollector!: (reason?: string) => void;
 
@@ -51,14 +51,14 @@ class ConnectFourGame {
       this.player1 = user2;
       this.player2 = user1;
     }
-    this.activePlayer = this.player1;
+    this.activePlayerPiece = 1;
     console.log(`[connectFour] Match started - player1: ${this.player1.username}, player2: ${this.player2.username}`);
   }
 
   drop = (col: number) => {
-    this.grid[col].drop(this.activePlayer === this.player1 ? 1 : 2);
-    this.activePlayer = (this.activePlayer === this.player1) ? this.player2 : this.player1;
-    console.log(`[connectFour] activePlayer is now ${this.activePlayer.username}`);
+    this.grid[col].drop(this.activePlayerPiece);
+    this.activePlayerPiece = this.activePlayerPiece === 1 ? 2 : 1;
+    console.log(`[connectFour] activePlayer is now ${this.getActivePlayer().username}`);
 
     this.updateGameState();
   }
@@ -66,11 +66,12 @@ class ConnectFourGame {
   moveFilter = (reaction: MessageReaction, user: Discord.User): boolean => {
     const col = indexToEmoji.indexOf(reaction.emoji.name);
     return emojis.has(reaction.emoji.name)
-        && this.activePlayer === user 
+        && this.getActivePlayer() === user 
         && !this.grid[col].isFull();
   }
 
-  private getPlayerByMark = (mark: number): Discord.User => mark === 1 ? this.player1 : this.player2;
+  private getPlayerByPiece = (piece: Piece): Discord.User => piece === 1 ? this.player1 : this.player2;
+  private getActivePlayer = (): Discord.User => this.getPlayerByPiece(this.activePlayerPiece);
 
   private updateGameState = () => {
     /* Check for game ending completions */
@@ -105,7 +106,7 @@ class ConnectFourGame {
   renderEmbed = (): RichEmbed => {
     const embed = buildEmbed({ title: 'Connect Four', description: `🔴${this.player1} vs 🔵${this.player2}` });
     embed.addField('Board', this.renderGrid());
-    embed.addField('To Move', `${this.activePlayer}'s turn`);
+    embed.addField('To Move', `${this.activePlayerPiece === 1 ? '🔴' : '🔵'}${this.getActivePlayer()}'s turn`);
     return embed;
   }
 }

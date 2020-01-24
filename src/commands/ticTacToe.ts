@@ -19,7 +19,7 @@ class TicTacToeGame {
   ];
   private player1: Discord.User;
   private player2: Discord.User;
-  private activePlayer: Discord.User;
+  private activePlayerMark: Mark;
   updateGameMessage!: (embed: RichEmbed) => void;
   stopCollector!: (reason?: string) => void;
 
@@ -31,7 +31,7 @@ class TicTacToeGame {
       this.player1 = user2;
       this.player2 = user1;
     }
-    this.activePlayer = this.player1;
+    this.activePlayerMark = 1;
     console.log(`[ticTacToe] Match started - player1: ${this.player1.username}, player2: ${this.player2.username}`);
   }
 
@@ -39,11 +39,11 @@ class TicTacToeGame {
     const row = boardPosToRow(boardPos);
     const col = boardPosToCol(boardPos);
 
-    this.board[row][col] = (this.activePlayer === this.player1) ? 1 : 2;
-    console.log(`[ticTacToe] ${this.activePlayer.username} marked boardPos: ${boardPos} = ${this.board[row][col]}`);
+    this.board[row][col] = this.activePlayerMark;
+    console.log(`[ticTacToe] ${this.getActivePlayer().username} marked boardPos: ${boardPos} = ${this.board[row][col]}`);
 
-    this.activePlayer = (this.activePlayer === this.player1) ? this.player2 : this.player1;
-    console.log(`[ticTacToe] activePlayer is now ${this.activePlayer.username}`);
+    this.activePlayerMark = this.activePlayerMark === 1 ? 2 : 1; 
+    console.log(`[ticTacToe] activePlayer is now ${this.getActivePlayer().username}`);
 
     this.updateGameState();
   }
@@ -54,11 +54,12 @@ class TicTacToeGame {
     const col = boardPosToCol(boardPos);
 
     return emojis.has(reaction.emoji.name)
-        && this.activePlayer === user
+        && this.getActivePlayer() === user
         && this.board[row][col] === 0;
   }
 
   private getPlayerByMark = (mark: Mark): Discord.User => mark === 1 ? this.player1 : this.player2;
+  private getActivePlayer = (): Discord.User => this.getPlayerByMark(this.activePlayerMark);
 
   private updateGameState = () => {
     /* Check for game ending completions */
@@ -68,7 +69,6 @@ class TicTacToeGame {
        && this.board[row][0] === this.board[row][1]
        && this.board[row][1] === this.board[row][2])
         return this.endGame(this.getPlayerByMark(this.board[row][0] as Mark));
-
     }
 
     // Vertical completions
@@ -77,7 +77,6 @@ class TicTacToeGame {
        && this.board[0][col] === this.board[1][col]
        && this.board[1][col] === this.board[2][col])
         return this.endGame(this.getPlayerByMark(this.board[0][col] as Mark));
-
     }
 
     // Diagonal completions
@@ -163,7 +162,7 @@ class TicTacToeGame {
   renderEmbed = (): RichEmbed => {
     const embed = buildEmbed({ title: 'Tic-Tac-Toe', description: `❌${this.player1} vs ⭕${this.player2}` });
     embed.addField('Board', this.renderBoard());
-    embed.addField('To Move', `${this.activePlayer}'s turn`);
+    embed.addField('To Move', `${this.activePlayerMark === 1 ? '❌' : '⭕'}${this.getActivePlayer()}'s turn`);
     return embed;
   }
 }
