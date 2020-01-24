@@ -6,6 +6,8 @@ const emojis = new Set(['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '
 const indexToEmoji = [...emojis];
 
 type Piece = 1 | 2;
+type State = Piece | 0;
+type Row = 0 | 1 | 2 | 3 | 4 | 5;
 
 class ColumnStack {
   private topIndex = 0;
@@ -21,7 +23,7 @@ class ColumnStack {
 
   isFull = (): boolean => this.topIndex === this.capacity;
 
-  at = (index: number): number => (index < this.topIndex) ? this.container[index] : 0;
+  at = (index: Row): State => (index < this.topIndex) ? this.container[index] : 0;
 }
 
 class ConnectFourGame {
@@ -63,9 +65,9 @@ class ConnectFourGame {
 
   moveFilter = (reaction: MessageReaction, user: Discord.User): boolean => {
     const col = indexToEmoji.indexOf(reaction.emoji.name);
-    return emojis.has(reaction.emoji.name) 
-          && this.activePlayer === user 
-          && !this.grid[col].isFull();
+    return emojis.has(reaction.emoji.name)
+        && this.activePlayer === user 
+        && !this.grid[col].isFull();
   }
 
   private getPlayerByMark = (mark: number): Discord.User => mark === 1 ? this.player1 : this.player2;
@@ -89,7 +91,7 @@ class ConnectFourGame {
     let render = '';
     render += '1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣\n';
     render += '⬛⬛⬛⬛⬛⬛⬛\n';
-    for (let row = this.columnHeight - 1; row >= 0; --row) {
+    for (let row = this.columnHeight - 1 as Row; row >= 0; --row) {
       render += this.grid.reduce((prevCol, col) =>
         prevCol
           + (col.at(row) === 1 ? '🔴'
@@ -118,7 +120,7 @@ const connectFour: Command = {
   guildOnly: true,
   execute: async (message, args) => {
     if (!message.mentions.users.first())
-      throw new Error(`[ticTacToe] invalid mentioned user argument: ${message.mentions.users}`);
+      throw new Error(`[connectFour] invalid mentioned user argument: ${message.mentions.users}`);
 
     const c4Game = new ConnectFourGame(message.author, message.mentions.users.first());
 
@@ -130,7 +132,7 @@ const connectFour: Command = {
       .then(() => gameMessage.react('5️⃣'))
       .then(() => gameMessage.react('6️⃣'))
       .then(() => gameMessage.react('7️⃣'))
-      .catch((error) => console.error(`[ticTacToe] Emoji failed to react in ${gameMessage}: ${error} `));
+      .catch((error) => console.error(`[connectFour] Emoji failed to react in ${gameMessage}: ${error} `));
     c4Game.updateGameMessage = (embed: RichEmbed) => gameMessage.edit(embed);
 
     const collector = gameMessage.createReactionCollector(c4Game.moveFilter);

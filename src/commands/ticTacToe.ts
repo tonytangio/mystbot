@@ -8,8 +8,11 @@ const indexToEmoji = [...emojis];
 const boardPosToRow = (boardPos: number): number => Math.floor(boardPos / 3);
 const boardPosToCol = (boardPos: number): number => boardPos % 3;
 
+type Mark = 1 | 2;
+type State = Mark | 0;
+
 class TicTacToeGame {
-  private board: number[][] = [
+  private board: State[][] = [
     [0, 0, 0],
     [0, 0, 0],
     [0, 0, 0],
@@ -55,7 +58,7 @@ class TicTacToeGame {
         && this.board[row][col] === 0;
   }
 
-  private getPlayerByMark = (mark: number): Discord.User => mark === 1 ? this.player1 : this.player2;
+  private getPlayerByMark = (mark: Mark): Discord.User => mark === 1 ? this.player1 : this.player2;
 
   private updateGameState = () => {
     /* Check for game ending completions */
@@ -64,7 +67,7 @@ class TicTacToeGame {
       if (this.board[row][0] !== 0
        && this.board[row][0] === this.board[row][1]
        && this.board[row][1] === this.board[row][2])
-        return this.endGame(this.getPlayerByMark(this.board[row][0]));
+        return this.endGame(this.getPlayerByMark(this.board[row][0] as Mark));
 
     }
 
@@ -73,7 +76,7 @@ class TicTacToeGame {
       if (this.board[0][col] !== 0
        && this.board[0][col] === this.board[1][col]
        && this.board[1][col] === this.board[2][col])
-        return this.endGame(this.getPlayerByMark(this.board[0][col]));
+        return this.endGame(this.getPlayerByMark(this.board[0][col] as Mark));
 
     }
 
@@ -81,12 +84,12 @@ class TicTacToeGame {
     if (this.board[1][1] !== 0
      && this.board[0][0] === this.board[1][1]
      && this.board[1][1] === this.board[2][2])
-      return this.endGame(this.getPlayerByMark(this.board[1][1]));
+      return this.endGame(this.getPlayerByMark(this.board[1][1] as Mark));
 
     if (this.board[1][1] !== 0
      && this.board[0][2] === this.board[1][1]
      && this.board[1][1] === this.board[2][0])
-      return this.endGame(this.getPlayerByMark(this.board[1][1]));
+      return this.endGame(this.getPlayerByMark(this.board[1][1] as Mark));
 
 
     // No available moves remaining
