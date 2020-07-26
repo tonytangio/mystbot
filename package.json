@@ -5,11 +5,12 @@
   "main": "./src/mystbot.ts",
   "scripts": {
     "build": "run-s build:*",
-    "build:volume": "sudo docker volume create nodemodules",
-    "build:install": "sudo docker-compose -f docker-compose.builder.yml run --rm install",
-    "start": "sudo docker-compose up",
-    "start:d": "sudo docker-compose up -d",
-    "watch": "ts-node-dev src/mystbot.ts"
+    "build:volume": "docker volume create nodemodules",
+    "build:install": "docker-compose -f docker-compose.builder.yml run --rm install",
+    "start": "docker-compose up && docker-compose rm",
+    "start:d": "docker-compose up -d && docker-compose rm",
+    "watch": "ts-node src/mystbot.ts",
+    "watch:dev": "ts-node-dev src/mystbot.ts"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,8 @@
   "homepage": "https://github.com/Mysterise/mystbot#readme",
   "dependencies": {
     "canvas": "^2.6.1",
-    "discord.js": "^11.6.4"
+    "discord.js": "^11.6.4",
+    "request": "^2.88.2"
   },
   "devDependencies": {
     "@types/node": "^14.0.26",
@@ -31,6 +33,7 @@
     "@typescript-eslint/parser": "^2.34.0",
     "eslint": "^6.8.0",
     "npm-run-all": "^4.1.5",
+    "ts-node": "^8.10.2",
     "ts-node-dev": "^1.0.0-pre.56",
     "typescript": "^3.9.7"
   }
