@@ -1,7 +1,7 @@
 # secrets
 **/secret/*
 !**/secret/index.ts
-!**/secret/secret_example.ts
+!**/secret/*.example
 
 # Logs
 logs
