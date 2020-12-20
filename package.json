@@ -4,13 +4,10 @@
   "description": "",
   "main": "./src/mystbot.ts",
   "scripts": {
-    "build": "run-s build:*",
-    "build:volume": "docker volume create nodemodules",
-    "build:install": "docker-compose -f docker-compose.builder.yml run --rm install",
-    "start": "docker-compose up && docker-compose rm",
-    "start:d": "docker-compose up -d && docker-compose rm",
-    "watch": "ts-node src/mystbot.ts",
-    "watch:dev": "ts-node-dev src/mystbot.ts"
+    "dev": "docker-compose up --build",
+    "dev:d": "docker-compose up --build -d",
+    "dev:watch": "ts-node-dev src/mystbot.ts",
+    "logs": "docker logs --tail 100 -f mystbot"
   },
   "repository": {
     "type": "git",
@@ -28,13 +25,13 @@
     "request": "^2.88.2"
   },
   "devDependencies": {
-    "@types/node": "^14.0.26",
+    "@types/node": "^14.14.14",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
     "eslint": "^6.8.0",
     "npm-run-all": "^4.1.5",
     "ts-node": "^8.10.2",
-    "ts-node-dev": "^1.0.0-pre.56",
+    "ts-node-dev": "^1.1.1",
     "typescript": "^3.9.7"
   }
 }

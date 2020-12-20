@@ -1,14 +1,10 @@
-version: '3.7'
+version: '3.6'
 services:
-  dev:
-    image: node:latest
-    working_dir: /mystbot
+  mystbot:
+    build:
+      context: .
+      target: development
+    command: ["npm", "run", "dev:watch"]
+    container_name: mystbot
     volumes:
-      - nodemodules:/mystbot/node_modules
-      - .:/mystbot
-      # .dockerignore is not applied to volumes - the following are "ignored":
-      - /mystbot/.git
-    command: npm run watch
-volumes:
-  nodemodules:
-    external: true
+      - '.:/mystbot'
