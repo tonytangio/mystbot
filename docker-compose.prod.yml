@@ -1,0 +1,8 @@
+version: '3.6'
+services:
+  mystbot:
+    build:
+      context: .
+      target: production
+    command: ["npm", "run", "prod:start"]
+    container_name: mystbot

@@ -25,3 +25,9 @@ RUN npm install --only=production --quiet --unsafe-perm --no-progress --no-audit
 FROM prereq as development
 
 RUN npm install --only=development --quiet --unsafe-perm --no-progress --no-audit
+
+
+# ---- PRODUCTION ----
+FROM prereq as production
+
+COPY . .

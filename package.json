@@ -4,10 +4,14 @@
   "description": "",
   "main": "./src/mystbot.ts",
   "scripts": {
-    "dev": "docker-compose up --build",
-    "dev:d": "docker-compose up --build -d",
+    "logs": "docker logs --tail 100 -f mystbot",
+    "dev": "docker-compose -f docker-compose.dev.yml up --build",
+    "dev:d": "docker-compose -f docker-compose.dev.yml up --build -d",
+    "dev:start": "ts-node src/mystbot.ts",
     "dev:watch": "ts-node-dev src/mystbot.ts",
-    "logs": "docker logs --tail 100 -f mystbot"
+    "prod": "docker-compose -f docker-compose.prod.yml up --build",
+    "prod:d": "docker-compose -f docker-compose.prod.yml up --build -d",
+    "prod:start": "tsc && node dist/mystbot.js"
   },
   "repository": {
     "type": "git",
