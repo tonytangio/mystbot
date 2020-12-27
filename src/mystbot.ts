@@ -1,7 +1,7 @@
 import Discord, { ClientOptions } from 'discord.js';
 import fs from 'fs';
 import { Command } from './commands/Command';
-import { messageHandler } from './handlers/messageHandler';
+import messageHandler from './handlers/messageHandler';
 import secret from './secret';
 
 interface MystBotOptions extends ClientOptions {

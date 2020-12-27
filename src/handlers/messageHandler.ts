@@ -3,7 +3,7 @@ import { Command } from '../commands/Command';
 import { commandHandler } from './commandHandler';
 import { ExtendedMessage } from '../types/extendedDiscordjs';
 
-export const messageHandler = (message: ExtendedMessage): void => {
+const messageHandler = (message: ExtendedMessage): void => {
   if (!message.content.startsWith(config.prefix)
     || message.author.bot
     || message.content.length === config.prefix.length) 
@@ -20,3 +20,5 @@ export const messageHandler = (message: ExtendedMessage): void => {
   if (!command) return;
   commandHandler(command, args, message);
 };
+
+export default messageHandler;
